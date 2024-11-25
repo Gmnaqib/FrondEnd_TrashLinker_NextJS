@@ -9,8 +9,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        customBlue: "#253745", // Warna biru khusus
+        customGray: "#F2F2F2", // Warna abu-abu khusus
+        customGreen: "#32C36C", // Warna hijau khusus
       },
     },
   },

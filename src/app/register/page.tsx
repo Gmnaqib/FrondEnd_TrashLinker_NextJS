@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Login() {
+export default function Register() {
   return (
     <div>Register</div>
   )
