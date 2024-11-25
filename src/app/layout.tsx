@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NavBar } from '@/components/NavBar';
 import { Suspense } from "react";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "TrashLinker",
@@ -23,7 +24,7 @@ export default function RootLayout({ children, }: any) {
         <main className="flex flex-1 flex-col items-center">
           {children}
         </main>
-       
+        <Footer/>
       </body>
     </html>
   );
