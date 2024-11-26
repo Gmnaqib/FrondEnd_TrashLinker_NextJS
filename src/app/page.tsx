@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from "@nextui-org/button";
 import FeatureCard from "@/components/FeatureCard";
+import RecyclingComponent from "@/components/Recycling";
 import '../styles/globals.css';
 
 export default function Home() {
@@ -30,11 +31,7 @@ export default function Home() {
 
           </div>
           <div className="lg:w-1/2 w-full mt-8 lg:mt-0">
-            <img
-              src="/logo.png"
-              alt="AI Headshot Illustration"
-              className="rounded-lg object-cover w-full h-full"
-            />
+            <RecyclingComponent></RecyclingComponent>
           </div>
         </div>
 
