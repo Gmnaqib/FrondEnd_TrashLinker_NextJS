@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Button } from "@nextui-org/button";
-import FeatureCard from "@/components/FeatureCard";
+import CardFeature from "@/components/CardFeature";
 import RecyclingComponent from "@/components/Recycling";
-import '../styles/globals.css';
+import '@/styles/globals.css';
 
 export default function Home() {
   return (
@@ -38,10 +38,10 @@ export default function Home() {
       </div>
 
       <div className="bg-black grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-10">
-        <FeatureCard icon="icon_postingan.svg" fitur="Pelaporan Lokasi Sampah" description="Pengguna dapat memposting lokasi sampah beserta foto, perkiraan kebutuhan orang, dan waktu pembersihan." />
-        <FeatureCard icon="icon_komunitas.svg" fitur="Kolaborasi komunitas" description="Pengguna dan komunitas dapat berkolaborasi untuk membersihkan area yang dilaporkan." />
-        <FeatureCard icon="icon_recycle.svg" fitur="Manajemen Pengepul Sampah" description="Fitur untuk terhubung dengan pengepul atau bank sampah lokal." />
-        <FeatureCard icon="icon_location.svg" fitur="Lokasi TPA" description="Menampilkan posisi sampah dan TPA/TPS terdekat." />
+        <CardFeature icon="icon_postingan.svg" fitur="Pelaporan Lokasi Sampah" description="Pengguna dapat memposting lokasi sampah beserta foto, perkiraan kebutuhan orang, dan waktu pembersihan." />
+        <CardFeature icon="icon_komunitas.svg" fitur="Kolaborasi komunitas" description="Pengguna dan komunitas dapat berkolaborasi untuk membersihkan area yang dilaporkan." />
+        <CardFeature icon="icon_recycle.svg" fitur="Manajemen Pengepul Sampah" description="Fitur untuk terhubung dengan pengepul atau bank sampah lokal." />
+        <CardFeature icon="icon_location.svg" fitur="Lokasi TPA" description="Menampilkan posisi sampah dan TPA/TPS terdekat." />
       </div>
 
       <div className='flex flex-row p-10'>

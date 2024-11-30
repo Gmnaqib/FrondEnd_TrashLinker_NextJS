@@ -6,7 +6,7 @@ interface FeatureCardProps {
   icon: string
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ fitur, description, icon }) => {
+const CardFeature: React.FC<FeatureCardProps> = ({ fitur, description, icon }) => {
   return (
     <article className="flex flex-col items-center overflow-hidden rounded-lg shadow transition hover:shadow-lg bg-white p-4 sm:p-6 h-60">
       {/* Icon */}
@@ -30,4 +30,4 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ fitur, description, icon }) =
   );
 };
 
-export default FeatureCard;
+export default CardFeature;
