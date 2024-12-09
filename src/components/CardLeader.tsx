@@ -9,7 +9,7 @@ type CardProps = {
 
 const CardLeader: React.FC<CardProps> = ({ name, points, rank, imageUrl }) => {
   return (
-    <div className="relative flex flex-col items-center bg-green-500 text-white rounded-lg shadow-md p-4">
+    <div className="relative flex flex-col items-center bg-green-500 text-white rounded-lg shadow-md p-4 m-8 w-52">
   {/* Profile Image */}
   <div className="relative w-20 h-20 rounded-full border-4 border-white -mt-12">
     <img
