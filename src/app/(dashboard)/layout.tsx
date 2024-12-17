@@ -1,33 +1,33 @@
-"use client"
-import type { Metadata } from "next";
-import { Suspense } from "react";
+"use client";
+import React, { useState, ReactNode } from "react";
 import Sidebar from '@/components/SideBar'
-import React, { useState } from 'react'
 import Header from "@/components/sidebar/Header";
 
-
-export default function RootLayout({ children, }: any) {
-
+export default function DefaultLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <html lang="en">
-      <body>
-        {/* <!-- ===== Page Wrapper Star ===== --> */}
+      <body className="h-screen overflow-hidden">
+        {/* <!-- ===== Page Wrapper Start ===== --> */}
         <div className="flex h-screen overflow-hidden">
-          {/* <!-- ===== Sidebar Star ===== --> */}
+          {/* <!-- ===== Sidebar Start ===== --> */}
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           {/* <!-- ===== Sidebar End ===== --> */}
 
-          {/* <!-- ===== Content Area Star ===== --> */}
+          {/* <!-- ===== Content Area Start ===== --> */}
           <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            {/* <!-- ===== Header Star ===== --> */}
+            {/* <!-- ===== Header Start ===== --> */}
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
             {/* <!-- ===== Header End ===== --> */}
 
-            {/* <!-- ===== Main Content Star ===== --> */}
-            <main>
-              <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            {/* <!-- ===== Main Content Start ===== --> */}
+            <main className="relative z-0 flex-1 ">
+              <div className="mx-auto max-w-screen-2xl p-4 md:p-6">
                 {children}
               </div>
             </main>
@@ -40,5 +40,7 @@ export default function RootLayout({ children, }: any) {
     </html>
   );
 }
+
+
 
 
