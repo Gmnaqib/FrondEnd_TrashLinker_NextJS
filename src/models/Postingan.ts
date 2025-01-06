@@ -1,4 +1,4 @@
-export interface Postingan {
+export interface PostinganModel {
     itemId: number,
     imageProfile: string,
     name: string,

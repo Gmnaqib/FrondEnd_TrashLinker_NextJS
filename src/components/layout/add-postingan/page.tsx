@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Bank() {
+export default function AddPostingan() {
   return (
     <div>Bank</div>
   )
