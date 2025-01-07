@@ -1,5 +1,7 @@
 import { Metadata } from "next";
-import Postingan from "../../components/layout/home/page";
+import Home from "../../components/layout/home/page";
+import AddPostingan from "@/components/layout/postingan/page";
+import Profile from "@/components/layout/profile/page";
 
 
 export const metadata: Metadata = {
@@ -8,10 +10,12 @@ export const metadata: Metadata = {
   // other metadata
 };
 
-export default function Home() {
+export default function Page() {
   return (
     <main>
-      <Postingan />
+      <Home />
+      <AddPostingan/>
+      <Profile />
     </main>
   );
 }

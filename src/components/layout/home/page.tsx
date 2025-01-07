@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import CardContent from "@/components/Card/CardContent";
 import { PostinganModel } from "@/models/Postingan";
 import { Pagination } from "swiper/modules";
+import Image from "next/image";
 
 import "@/styles/globals.css";
 import "swiper/css";
@@ -72,12 +73,79 @@ export default function Home() {
     },
   ];
 
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Add your form submission logic here
+    console.log("Form submitted with email:", email);
+  };
+
   return (
     <>
       <section className="overflow-hidden pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
         <div className="mx-auto max-w-c-1390 px-4 md:px-8 2xl:px-0">
-          <div className="flex lg:items-center lg:gap-8 xl:gap-32.5">
-            <h2 className="text-black text-2xl font-bold mb-4">LeaderBoard</h2>
+          <div className="flex lg:items-center justify-center lg:gap-8 xl:gap-32.5">
+            <div className=" md:w-1/2">
+              <h2 className="text-black text-2xl font-bold mb-4">
+                LeaderBoard
+              </h2>
+
+              {/* Pindahkan Swiper ke bawah header */}
+              <Swiper
+                spaceBetween={20}
+                grabCursor={true}
+                breakpoints={{
+                  // For screens wider than 1024px
+                  1024: {
+                    slidesPerView: 5, // 5 items per view
+                  },
+                  // For screens wider than 768px but less than 1024px
+                  768: {
+                    slidesPerView: 3, // 3 items per view
+                  },
+                  // For screens wider than 480px but less than 768px
+                  480: {
+                    slidesPerView: 2, // 2 items per view
+                  },
+                  // For screens smaller than 480px
+                  0: {
+                    slidesPerView: 1, // 1 item per view
+                  },
+                }}
+              >
+                {items.map((item) => (
+                  <SwiperSlide key={item.id}>
+                    <CardLeader
+                      imageUrl="img/ronaldo.jpg"
+                      name={item.name}
+                      points={item.point}
+                      rank={item.rank}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              <div className="flex flex-col items-center w-full">
+                {itemsPostingan.map((item) => (
+                  <div key={item.itemId}>
+                    <CardContent
+                      imageProfile={item.imageProfile}
+                      name={item.name}
+                      date={item.date}
+                      title={item.title}
+                      description={item.description}
+                      imageBefore={item.imageBefore}
+                      imageAfter={item.imageAfter}
+                      city={item.city}
+                      tpa={item.tpa}
+                      dateVolunteer={item.dateVolunteer}
+                      volunteer={item.volunteer}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
