@@ -15,7 +15,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css";
 
-export default function Home() {
+const Home = async () => {
   const items: Leaderboard[] = [
     { id: 1, name: "Dewa Tri Wijaya", rank: 1, point: 100 },
     { id: 2, name: "Jane Doe", rank: 2, point: 95 },
@@ -86,15 +86,20 @@ export default function Home() {
       <section className="overflow-hidden pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
         <div className="mx-auto max-w-c-1390 px-4 md:px-8 2xl:px-0">
           <div className="flex lg:items-center justify-center lg:gap-8 xl:gap-32.5">
+            
+            <div className="bg-white">
+              <h2>Hallo</h2>
+            </div>
+
             <div className=" md:w-1/2">
               <h2 className="text-black text-2xl font-bold mb-4">
                 LeaderBoard
               </h2>
 
-              {/* Pindahkan Swiper ke bawah header */}
-              <Swiper
+              {/* <Swiper
                 spaceBetween={20}
                 grabCursor={true}
+                
                 breakpoints={{
                   // For screens wider than 1024px
                   1024: {
@@ -124,7 +129,7 @@ export default function Home() {
                     />
                   </SwiperSlide>
                 ))}
-              </Swiper>
+              </Swiper> */}
 
               <div className="flex flex-col items-center w-full">
                 {itemsPostingan.map((item) => (
@@ -146,9 +151,12 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          
           </div>
         </div>
       </section>
     </>
   );
-}
+};
+
+export default Home;

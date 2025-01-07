@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function Profile() {
   return (
-    <div>Bank</div>
+    <div>Bank hallo</div>
   )
 }

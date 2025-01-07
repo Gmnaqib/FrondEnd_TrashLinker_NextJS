@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import Home from "../../components/layout/home/page";
-import AddPostingan from "@/components/layout/postingan/page";
-import Profile from "@/components/layout/profile/page";
+import Home from "./home/page";
+import AddPostingan from "@/app/(dashboard)/postingan/page";
+import Profile from "@/app/(dashboard)/profile/page";
 
 
 export const metadata: Metadata = {
@@ -14,8 +14,6 @@ export default function Page() {
   return (
     <main>
       <Home />
-      <AddPostingan/>
-      <Profile />
     </main>
   );
 }
