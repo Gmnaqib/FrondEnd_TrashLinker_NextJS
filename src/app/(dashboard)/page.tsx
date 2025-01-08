@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import Home from "./home/page";
-import AddPostingan from "@/app/(dashboard)/postingan/page";
-import Profile from "@/app/(dashboard)/profile/page";
+
+import 'leaflet/dist/leaflet.css';
+import '@/styles/globals.css';
 
 
 export const metadata: Metadata = {
