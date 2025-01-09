@@ -1,8 +1,7 @@
 import { Metadata } from "next";
-import Home from "./home/page";
-
 import 'leaflet/dist/leaflet.css';
 import '@/styles/globals.css';
+import About from "./about/page";
 
 
 export const metadata: Metadata = {
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main>
-      <Home />
+      <About />
     </main>
   );
 }
