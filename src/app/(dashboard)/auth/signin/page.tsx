@@ -1,5 +1,6 @@
 import Signin from "@/components/Auth/Signin";
 import { Metadata } from "next";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Login Page - Solid SaaS Boilerplate",

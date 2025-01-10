@@ -1,5 +1,6 @@
 import Signup from "@/components/Auth/Signup";
 import { Metadata } from "next";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Sign Up Page - Solid SaaS Boilerplate",
