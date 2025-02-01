@@ -1,31 +1,94 @@
 "use client";
-import MapPicker from "@/components/map/MapPicker";
-import React from "react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import Geocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import axios from "axios";
 
-import 'leaflet/dist/leaflet.css';
-import '@/styles/globals.css';
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
-
-interface AddPostinganFormProps {
-  onSubmit: (formData: any) => void;
-}
-
-const AddPostinganForm: React.FC<AddPostinganFormProps> = ({ onSubmit }) => {
+const AddPostinganForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    imageProfile: "",
-    name: "",
-    date: "",
     title: "",
     description: "",
-    imageBefore: "",
-    imageAfter: "",
-    city: "",
+    image: null,
+    longitude: null,
+    latitude: null,
+    type: "Report",
+    schedule: "",
+    tpaId: "",
     fullAddress: "",
-    tpa: "",
-    dateVolunteer: "",
-    volunteer: 0,
   });
+
+  const [tpaList, setTpaList] = useState([]);
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    axios.get("http://178.128.221.26:3000/tpa").then((response) => {
+      setTpaList(response.data.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [106.827153, -6.175392],
+      zoom: 12,
+    });
+
+    const geocoder = new Geocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: false,
+      placeholder: "Search for location",
+    });
+
+    map.addControl(geocoder);
+    let marker = new mapboxgl.Marker();
+
+    geocoder.on("result", (e) => {
+      const { center, place_name } = e.result;
+      setFormData((prevData) => ({
+        ...prevData,
+        fullAddress: place_name,
+        latitude: center[1],
+        longitude: center[0],
+      }));
+      marker.setLngLat(center).addTo(map);
+      map.flyTo({ center });
+    });
+
+    map.on("click", (e) => {
+      const { lng, lat } = e.lngLat;
+      marker.setLngLat([lng, lat]).addTo(map);
+
+      fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.features.length > 0) {
+            setFormData((prevData) => ({
+              ...prevData,
+              fullAddress: data.features[0].place_name,
+              latitude: lat,
+              longitude: lng,
+            }));
+          }
+        });
+    });
+
+    mapRef.current = map;
+    return () => map.remove();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,25 +98,39 @@ const AddPostinganForm: React.FC<AddPostinganFormProps> = ({ onSubmit }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: e.target.files[0],
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
-    }
-    setFormData({
-      imageProfile: "",
-      name: "",
-      date: "",
-      title: "",
-      description: "",
-      imageBefore: "",
-      imageAfter: "",
-      city: "",
-      fullAddress: "",
-      tpa: "",
-      dateVolunteer: "",
-      volunteer: 0,
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
     });
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/signin");
+      return;
+    }
+
+    axios
+      .post("http://178.128.221.26:3000/post", formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log("Post successfully added", response.data);
+      })
+      .catch((error) => {
+        console.error("Error adding post", error);
+      });
   };
 
   return (
@@ -61,169 +138,89 @@ const AddPostinganForm: React.FC<AddPostinganFormProps> = ({ onSubmit }) => {
       <form
         onSubmit={handleSubmit}
         className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6"
+        encType="multipart/form-data"
       >
         <h2 className="text-2xl font-bold mb-4">Add New Postingan</h2>
-
-        {/* Input Fields */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter name"
-              required
-            />
-          </div>
+          <label className="block text-gray-700 font-medium">Title</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
-          <div>
-            <label className="block text-gray-700 font-medium">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              required
-            />
-          </div>
+          <label className="block text-gray-700 font-medium">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            rows={4}
+            required
+          ></textarea>
 
-          <div>
-            <label className="block text-gray-700 font-medium">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter title"
-              required
-            />
-          </div>
+          <label className="block text-gray-700 font-medium">Image</label>
+          <input
+            type="file"
+            name="image"
+            onChange={handleImageChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter description"
-              rows={4}
-              required
-            ></textarea>
-          </div>
+          <label className="block text-gray-700 font-medium">Type</label>
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+          >
+            <option value="Report">Report</option>
+            <option value="Volunteer">Volunteer</option>
+          </select>
 
-          <MapPicker formData={formData} setFormData={setFormData} />
-          <div>
-            <label className="block text-gray-700 font-medium">City</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter city"
-              required
-            />
-          </div>
+          <label className="block text-gray-700 font-medium">Schedule</label>
+          <input
+            type="date"
+            name="schedule"
+            value={formData.schedule}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
-      
+          <label className="block text-gray-700 font-medium">TPA</label>
+          <select
+            name="tpaId"
+            value={formData.tpaId}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          >
+            <option value="">Select TPA</option>
+            {tpaList.map((tpa) => (
+              <option key={tpa.id} value={tpa.id}>
+                {tpa.tpa_name}
+              </option>
+            ))}
+          </select>
 
-          <div>
-            <label className="block text-gray-700 font-medium">TPA</label>
-            <input
-              type="text"
-              name="tpa"
-              value={formData.tpa}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter TPA"
-              required
-            />
-          </div>
+          <label className="block text-gray-700 font-medium">
+            Full Address
+          </label>
+          <input
+            type="text"
+            name="fullAddress"
+            value={formData.fullAddress}
+            className="w-full border rounded-lg p-2 mt-1"
+            readOnly
+          />
 
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Volunteer Date
-            </label>
-            <input
-              type="date"
-              name="dateVolunteer"
-              value={formData.dateVolunteer}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Total Volunteers
-            </label>
-            <input
-              type="number"
-              name="volunteer"
-              value={formData.volunteer}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter total volunteers"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Image Profile
-            </label>
-            <input
-              type="text"
-              name="imageProfile"
-              value={formData.imageProfile}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter profile image URL"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Image Before
-            </label>
-            <input
-              type="text"
-              name="imageBefore"
-              value={formData.imageBefore}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter before image URL"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Image After
-            </label>
-            <input
-              type="text"
-              name="imageAfter"
-              value={formData.imageAfter}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 mt-1"
-              placeholder="Enter after image URL"
-              required
-            />
-          </div>
+          <div ref={mapContainerRef} className="h-64 w-full mt-2 rounded-lg" />
         </div>
-
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-blue-600"

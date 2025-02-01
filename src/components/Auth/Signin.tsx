@@ -47,8 +47,12 @@ const Signin = () => {
         }
       );
 
+      console.log("Response Data:", response.data);
+
       // Assume the server returns a token and user data
-      const { token, user } = response.data;
+      //const { token, user } = response.data;
+      const { token, ...user } = response.data.data;
+
 
       // Save token and user data in localStorage
       localStorage.setItem("token", token);
@@ -120,11 +124,7 @@ const Signin = () => {
               )}
 
               <div className="flex flex-wrap items-center gap-10 md:justify-between xl:gap-15">
-                <div className="flex flex-wrap gap-4 md:gap-10">
-                  <a href="#" className="hover:text-primary">
-                    Forgot Password?
-                  </a>
-                </div>
+                
 
                 <button
                   type="submit"

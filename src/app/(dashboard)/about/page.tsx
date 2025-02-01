@@ -25,9 +25,9 @@ export default function About() {
                 komunitas setempat untuk melakukan aksi nyata.
               </p>
               <div className="flex flex-col items-center md:items-start space-y-3">
-                <Link href="/login">
+                <Link href="/auth/signin">
                   <Button
-                    className="bg-customGreen text-white px-8 py-3 rounded-lg text-lg transition-all duration-300 hover:bg-green-700 shadow-xl"
+                    className="bg-customGreen text-black px-8 py-3 rounded-lg text-lg transition-all duration-300 hover:bg-green-700 shadow-xl"
                     radius="sm"
                     variant="shadow"
                   >
@@ -42,7 +42,7 @@ export default function About() {
 
             {/* Right Section */}
             <div className="lg:w-1/2 w-full mt-8 lg:mt-0">
-              <img src='/img/img_about.png'  />
+              <img src="/img/img_about.png" />
             </div>
           </div>
         </div>
