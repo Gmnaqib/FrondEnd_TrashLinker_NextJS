@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { Leaderboard } from "@/models/Leaderboard";
 import CardContent from "@/components/Card/CardContent";
@@ -11,6 +10,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 const Postingan = () => {
   const items: Leaderboard[] = [
@@ -21,6 +23,28 @@ const Postingan = () => {
     { id: 5, name: "John Smith", rank: 3, point: 90 },
     { id: 6, name: "Alice Johnson", rank: 4, point: 85 },
   ];
+
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Pastikan hanya akses localStorage di sisi klien
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+
+      // Jika token tidak ada, arahkan ke halaman login
+      if (!token) {
+        router.push("/auth/signin"); // Ganti dengan path halaman login kamu
+      } else {
+        setLoading(false); // Jika token ada, set loading false
+      }
+    }
+  }, [router]);
+
+  // Tampilkan loading sementara memeriksa token
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   const itemsPostingan: PostinganModel[] = [
     {

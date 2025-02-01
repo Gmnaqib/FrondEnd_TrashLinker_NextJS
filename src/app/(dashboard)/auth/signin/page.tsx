@@ -1,12 +1,7 @@
+"use client";
 import Signin from "@/components/Auth/Signin";
-import { Metadata } from "next";
 import "@/styles/globals.css";
-
-export const metadata: Metadata = {
-  title: "Login Page - Solid SaaS Boilerplate",
-  description: "This is Login page for Startup Pro",
-  // other metadata
-};
+import "@/styles/globals.css";
 
 const SigninPage = () => {
   return (
@@ -15,5 +10,7 @@ const SigninPage = () => {
     </>
   );
 };
+
+
 
 export default SigninPage;
