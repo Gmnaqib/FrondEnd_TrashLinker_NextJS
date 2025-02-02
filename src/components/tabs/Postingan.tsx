@@ -20,6 +20,7 @@ const Postingan = () => {
       
       const fetchPosts = async () => {
         try {
+          
           const response = await fetch("http://178.128.221.26:3000/posts", {
             method: "GET",
             headers: {
@@ -58,20 +59,26 @@ const Postingan = () => {
         <div className="flex justify-center">
           <div className="bg-white w-full flex flex-col items-center">
             {itemsPostingan.map((item) => (
+
+              // buatkan console log untuk menampilkan item.id
+              console.log(item),
+
+              <div key={item.id} className="w-full max-w-[800px]">
               <CardContent
                 key={item.id}
-                imageProfile="/default-profile.png"
-                name="User"
+                imageProfile="img/profile.jpg"
+                name={item.name}
                 date={new Date(item.createdAt).toLocaleString()}
                 title={item.title}
                 description={item.description}
-                imageBefore={item.image}
+                imageBefore={`http://178.128.221.26:3000${item.image}`}
                 imageAfter={item.image}
-                city="Unknown"
-                tpa="Unknown"
+                city={item.city}
+                tpa={item.tpa}
                 dateVolunteer={new Date(item.schedule).toLocaleDateString()}
-                volunteer={0}
+                volunteer={item.volunteer}
               />
+              </div>
             ))}
           </div>
         </div>

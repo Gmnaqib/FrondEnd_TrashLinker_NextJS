@@ -53,7 +53,7 @@ export default function page() {
                     className={`${index < 5 ? "block" : "hidden"} lg:block`}
                   >
                     <CardLeader
-                      imageUrl="img/ronaldo.jpg"
+                      imageUrl="img/profile.jpg"
                       name={item.name}
                       points={item.point}
                       rank={item.rank}

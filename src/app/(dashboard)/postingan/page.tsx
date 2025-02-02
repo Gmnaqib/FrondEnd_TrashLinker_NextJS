@@ -119,7 +119,7 @@ const AddPostinganForm = ({ onSubmit }) => {
     }
 
     axios
-      .post("http://178.128.221.26:3000/post", formDataToSend, {
+      .post("http://178.128.221.26:3000/posts", formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -130,6 +130,9 @@ const AddPostinganForm = ({ onSubmit }) => {
       })
       .catch((error) => {
         console.error("Error adding post", error);
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+        }
       });
   };
 
