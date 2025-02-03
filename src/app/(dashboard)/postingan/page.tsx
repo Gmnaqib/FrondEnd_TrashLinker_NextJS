@@ -10,22 +10,22 @@ import axios from "axios";
 mapboxgl.accessToken =
   "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
-const AddPostinganForm = ({ onSubmit }) => {
+const AddPostinganForm = ({ }) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image: null,
-    longitude: null,
-    latitude: null,
+    image: null as File | null,
+    longitude: 0,
+    latitude: 0,
     type: "Report",
     schedule: "",
     tpaId: "",
     fullAddress: "",
   });
 
-  const [tpaList, setTpaList] = useState([]);
+  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>([]);
   const mapContainerRef = useRef(null);
-  const mapRef = useRef(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const AddPostinganForm = ({ onSubmit }) => {
     });
 
     const geocoder = new Geocoder({
-      accessToken: mapboxgl.accessToken,
+      accessToken: mapboxgl.accessToken || "",
       mapboxgl: mapboxgl,
       marker: false,
       placeholder: "Search for location",
@@ -90,7 +90,7 @@ const AddPostinganForm = ({ onSubmit }) => {
     return () => map.remove();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -98,18 +98,22 @@ const AddPostinganForm = ({ onSubmit }) => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      image: e.target.files[0],
-    }));
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      if (e.target.files && e.target.files.length > 0) {
+        setFormData((prevData) => ({
+          ...prevData,
+          image: e.target.files ? e.target.files[0] : null,
+        }));
+      }
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
+    (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
+      formDataToSend.append(key, formData[key] as any);
     });
 
     const token = localStorage.getItem("token");

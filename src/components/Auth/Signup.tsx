@@ -1,8 +1,16 @@
 "use client";
+
 import { motion } from "framer-motion";
-import axios from "axios"; // import axios
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import mapboxgl from "mapbox-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import { useRouter } from "next/navigation";
+
+const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
 const Signup = () => {
   const [data, setData] = useState({
@@ -10,126 +18,181 @@ const Signup = () => {
     username: "",
     password: "",
     address: "",
-    longitude: "",
-    latitude: "",
-    role: "", // "Masyarakat" or "Komunitas"
+    longitude: 0,
+    latitude: 0,
+    role: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (mapContainerRef.current && !mapRef.current) {
+      mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [106.816666, -6.200000], // Default center (Jakarta)
+        zoom: 10,
+      });
+      mapRef.current = map;
+
+      // Initialize the Geocoder and add it directly to the map
+      const geocoder = new MapboxGeocoder({
+        accessToken: MAPBOX_ACCESS_TOKEN,
+        mapboxgl: mapboxgl as any,
+        placeholder: "Search for your address",
+      });
+      map.addControl(geocoder, "top-left"); // Adding geocoder to the map directly
+
+      geocoder.on("result", (e) => {
+        // When a result is selected from the geocoder
+        const { place_name, geometry } = e.result;
+        const [longitude, latitude] = geometry.coordinates;
+        
+        setData((prevData) => ({
+          ...prevData,
+          address: place_name,
+          longitude: longitude.toString(),
+          latitude: latitude.toString(),
+        }));
+
+        // Remove existing marker and add a new one
+        if (markerRef.current) {
+          markerRef.current.remove();
+        }
+        markerRef.current = new mapboxgl.Marker()
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        
+        // Adjust the map to the new location
+        map.flyTo({ center: [longitude, latitude], zoom: 14 });
+      });
+
+      map.on("click", (e) => {
+        const { lng, lat } = e.lngLat;
+        
+        // Use reverse geocoding to fetch the address based on coordinates
+        axios
+          .get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_ACCESS_TOKEN}`
+          )
+          .then((response) => {
+            const address = response.data.features[0]?.place_name || "Unknown Location";
+            
+            setData((prevData) => ({
+              ...prevData,
+              address: address,
+              longitude: lng,
+              latitude: lat,
+            }));
+
+            // Remove existing marker and add a new one
+            if (markerRef.current) {
+              markerRef.current.remove();
+            }
+            markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
+          })
+          .catch((error) => {
+            console.error("Error fetching address for click:", error);
+          });
+      });
+    }
+  }, []);
+
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-
     try {
-      // Mengirimkan data ke server
-      const response = await axios.post("http://localhost/user/register", data);
+      const response = await axios.post("http://178.128.221.26:3000/user/register", data);
       console.log("Response:", response.data);
 
-      
-      // Menangani response dari server, misalnya redirect atau pesan sukses
+      const { token, ...user } = response.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      router.push("/auth/signin");
+
     } catch (error) {
       console.error("Error:", error);
-      alert("Terjadi kesalahan saat mendaftar.");
     }
   };
 
   return (
-    <section className="pb-12.5 pt-32.5 lg:pb-25 lg:pt-45 xl:pb-30 xl:pt-50">
-      <div className="relative z-1 mx-auto max-w-4xl px-7.5 pb-7.5 pt-10 lg:px-15 lg:pt-15 xl:px-20 xl:pt-20">
-        <div className="absolute left-0 top-0 -z-1 h-2/3 w-full rounded-lg bg-gradient-to-t from-transparent to-[#dee7ff47] dark:bg-gradient-to-t dark:to-[#252A42]"></div>
-
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: -20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-          initial="hidden"
-          whileInView="visible"
-          transition={{ duration: 1, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="animate_top rounded-lg bg-white px-7.5 pt-7.5 shadow-solid-8 dark:border dark:border-strokedark dark:bg-black xl:px-15 xl:pt-15"
-        >
-          <h2 className="mb-10 text-center text-3xl font-semibold text-black dark:text-white xl:text-4xl">
-            Create an Account
-          </h2>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
-              <input
-                name="username"
-                type="text"
-                placeholder="Username"
-                value={data.username}
-                onChange={handleChange}
-                className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-              />
-              <input
-                name="email"
-                type="email"
-                placeholder="Email address"
-                value={data.email}
-                onChange={handleChange}
-                className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-              />
-            </div>
-
-            <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
-              <select
-                name="role"
-                value={data.role}
-                onChange={handleChange}
-                className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-              >
-                <option value="">Select Role</option>
-                <option value="masyarakat">Masyarakat</option>
-                <option value="komunitas">Komunitas</option>
-              </select>
-
-              <input
-                name="address"
-                type="text"
-                placeholder="Full Address"
-                value={data.address}
-                onChange={handleChange}
-                className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-              />
-            </div>
-
-            <div className="mb-7.5">
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={data.password}
-                onChange={handleChange}
-                className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
-              />
-            </div>
-
-            <div className="mb-7.5 flex justify-center">
-              <button
-                type="submit"
-                className="w-full rounded-sm border border-stroke bg-primary px-6 py-3 text-base text-white outline-none transition-all duration-300 hover:bg-primary-dark"
-              >
-                Sign Up
-              </button>
-            </div>
-          </form>
-
-          <p className="text-center text-base text-body-color dark:text-body-color-dark">
-            Already have an account?{" "}
-            <Link href="/signin" className="text-primary hover:underline">
-              Sign In
-            </Link>
-          </p>
-        </motion.div>
-      </div>
+    <section className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md p-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
+      >
+        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-900 dark:text-white">
+          Create an Account
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="username"
+            type="text"
+            placeholder="Username"
+            value={data.username}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email address"
+            value={data.email}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+          <select
+            name="role"
+            value={data.role}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="">Select Role</option>
+            <option value="USER">Masyarakat</option>
+            <option value="COMMUNITY">Komunitas</option>
+          </select>
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={data.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+          <label className="block text-gray-700 font-medium">Full Address</label>
+          <input
+            name="address"
+            type="text"
+            value={data.address}
+            readOnly
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+          <div ref={mapContainerRef} className="h-64 w-full mt-2 rounded-lg" />
+          <button
+            type="submit"
+            className="w-full p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            Sign Up
+          </button>
+        </form>
+        <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
+          Already have an account?{' '}
+          <Link href="/signin" className="text-blue-600 hover:underline">
+            Sign In
+          </Link>
+        </p>
+      </motion.div>
     </section>
   );
 };
