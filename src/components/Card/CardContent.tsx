@@ -1,4 +1,3 @@
-import { Button } from "@nextui-org/button";
 import React from "react";
 
 type CardContent = {
@@ -8,11 +7,12 @@ type CardContent = {
   title: string;
   description: string;
   imageBefore: string;
-  imageAfter: string;
   city: string;
   tpa: string;
+  type: string;
   dateVolunteer: string;
   volunteer: number;
+  onVolunteerClick: () => void;
 };
 
 const CardContent: React.FC<CardContent> = ({
@@ -22,90 +22,74 @@ const CardContent: React.FC<CardContent> = ({
   title,
   description,
   imageBefore,
-  imageAfter,
   city,
   tpa,
+  type,
   dateVolunteer,
   volunteer,
+  onVolunteerClick
 }) => {
   return (
-    <div className="relative flex flex-col bg-white text-black rounded-lg shadow-md p-4 m-3 max-w-full md:max-w-md lg:max-w-lg">
+    <div className="relative flex flex-col bg-white text-black rounded-lg shadow-lg p-6 m-4 max-w-lg mx-auto">
       {/* Header Section */}
-      <div className="flex flex-row items-center mb-4">
+      <div className="flex flex-row items-center mb-6">
         <img
           src={imageProfile}
-          className="w-14 h-14 object-cover rounded-full mr-3"
+          className="w-16 h-16 object-cover rounded-full mr-4"
           alt="Profile"
         />
         <div className="flex flex-col">
-          <h2 className="text-lg font-semibold">{name}</h2>
-          <h3 className="text-gray-500">{date}</h3>
+          <h2 className="text-xl font-semibold">{name}</h2>
+          <h3 className="text-gray-500 text-sm">{date}</h3>
         </div>
       </div>
 
       {/* Image Section */}
-      <div className="flex justify-center mb-4">
-        {imageBefore ? ( // Pastikan ada nilai sebelum menampilkan gambar
+      <div className="flex justify-center mb-6">
+        {imageBefore ? (
           <img
             src={imageBefore}
-            className="w-full h-auto rounded-md"
+            className="w-full h-auto rounded-lg"
             alt="Before Image"
-            onError={(e) => (e.target.style.display = "none")} // Sembunyikan jika gambar gagal dimuat
+            onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
           />
         ) : (
-          <p className="text-gray-500">No image available</p> // Tampilkan teks jika tidak ada gambar
+          <p className="text-gray-500 text-sm">No image available</p>
         )}
       </div>
 
       {/* Information Section */}
-      <div className="grid grid-cols-2 gap-3 mb-4 md:grid-cols-4">
-        <div className="flex items-center">
-          <img
-            src="icons/icon_location.svg"
-            className="w-5 h-5 mr-1"
-            alt="Location Icon"
-          />
-          <h2 className="text-sm">{city}</h2>
+      <div className="grid grid-cols-2 gap-6 mb-6 text-sm text-gray-700">
+        <div className="flex items-center space-x-2">
+          <i className="w3-xlarge w3-margin-right">🌍</i>
+          <span>{city}</span>
         </div>
-
-        <div className="flex items-center">
-          <img
-            src="icons/icon_tpa.svg"
-            className="w-5 h-5 mr-1"
-            alt="TPA Icon"
-          />
-          <h2 className="text-sm">{tpa}</h2>
+        <div className="flex items-center space-x-2">
+          <i className="w3-xlarge w3-margin-right">🏞️</i>
+          <span>{tpa}</span>
         </div>
-
-        <div className="flex items-center">
-          <img
-            src="icons/icon_date.svg"
-            className="w-5 h-5 mr-1"
-            alt="Date Icon"
-          />
-          <h2 className="text-sm">{dateVolunteer}</h2>
+        <div className="flex items-center space-x-2">
+          <i className="w3-xlarge w3-margin-right">📅</i>
+          <span>{dateVolunteer}</span>
         </div>
-
-        <div className="flex items-center">
-          <img
-            src="icons/icon_komunitas.svg"
-            className="w-5 h-5 mr-1"
-            alt="Volunteer Icon"
-          />
-          <h2 className="text-sm">{volunteer}</h2>
+        <div className="flex items-center space-x-2">
+          <i className="w3-xlarge w3-margin-right">🤝</i>
+          <span>{volunteer} Volunteers</span>
         </div>
       </div>
 
       {/* Title and Description */}
-      <h1 className="text-xl font-bold mb-2">{title}</h1>
-      <p className="text-gray-600 mb-4">{description}</p>
+      <h1 className="text-2xl font-bold mb-4">{title}</h1>
+      <p className="text-gray-600 text-base mb-6">{description}</p>
 
       {/* Button Section */}
-      <div className="flex justify-center mt-auto">
-        <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-          Volunteer
-        </button>
-      </div>
+      {type !== "report" && (
+        <div className="flex justify-center mt-auto">
+          <button onClick={onVolunteerClick} className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 focus:outline-none transition duration-300">
+            Volunteer
+          </button>
+        </div>
+      )}
     </div>
   );
 };

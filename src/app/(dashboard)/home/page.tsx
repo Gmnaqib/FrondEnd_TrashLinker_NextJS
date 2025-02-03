@@ -6,32 +6,49 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css";
 import { useState } from "react";
+import { useEffect } from "react";
 import Postingan from "@/components/tabs/Postingan";
 import Volunteer from "@/components/tabs/Volunteer";
 import Tabs from "@/components/tabs/Tabs";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import CardLeader from "@/components/Card/CardLeader";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function page() {
-  const [activeTab, setActiveTab] = useState(0);
 
-  const items = [
-    { id: 1, name: "John Doe", point: 150, rank: 1 },
-    { id: 2, name: "Jane Smith", point: 140, rank: 2 },
-    { id: 3, name: "Alice Johnson", point: 130, rank: 3 },
-    { id: 4, name: "Bob Brown", point: 120, rank: 4 },
-    { id: 5, name: "Charlie White", point: 110, rank: 5 },
-    { id: 6, name: "Diana Gray", point: 100, rank: 6 },
-    { id: 7, name: "Ethan Black", point: 90, rank: 7 },
-    { id: 8, name: "Fiona Green", point: 80, rank: 8 },
-    { id: 9, name: "George Blue", point: 70, rank: 9 },
-  ];
+  interface Leader {
+    userId: string;
+    username: string;
+    totalActivities: number;
+    rank: number;
+  }
 
-  const tabs = [
-    { id: 0, title: "Postingan", component: <Postingan /> },
-    { id: 1, title: "Volunteer", component: <Volunteer /> },
-  ];
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const router = useRouter();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    router.push("/auth/signin");
+    return;
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/auth/signin");
+      return;
+    }
+
+    axios
+      .get("http://178.128.221.26:3000/volunteer/leaderboard", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => setLeaders(response.data))
+      .catch((error) => console.error("Error fetching leaderboard data:", error));
+  }, [router]);
+
   return (
     <>
       <section className="overflow-hidden pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
@@ -47,16 +64,15 @@ export default function page() {
 
               {/* Content Section */}
               <div className="max-h-96 overflow-y-auto border border-gray-300 rounded-lg p-4">
-                {items.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className={`${index < 5 ? "block" : "hidden"} lg:block`}
-                  >
+
+
+                {leaders.map((item, index) => (
+                  <div key={item.userId || index} className={`${index < 5 ? "block" : "hidden"} lg:block`}>
                     <CardLeader
                       imageUrl="img/profile.jpg"
-                      name={item.name}
-                      points={item.point}
-                      rank={item.rank}
+                      name={item.username}
+                      points={item.totalActivities}
+                      rank={item.rank || index + 1}
                     />
                   </div>
                 ))}
