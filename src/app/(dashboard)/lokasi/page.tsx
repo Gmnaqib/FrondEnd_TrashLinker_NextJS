@@ -9,14 +9,22 @@ import '@/styles/globals.css';
 mapboxgl.accessToken = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g"; 
 
 export default function Home() {
-  const [map, setMap] = useState(null);
-  const [data, setData] = useState([]);
+  const [map, setMap] = useState<mapboxgl.Map | null>(null);
+  interface DataItem {
+    longitude: number;
+    latitude: number;
+    tpaName: string;
+    image: string;
+    description: string;
+    tpaAddress: string;
+  }
+
+  const [data, setData] = useState<DataItem[]>([]);
   const [lng, setLng] = useState(106.8456);
   const [lat, setLat] = useState(-6.2088);
   const [zoom, setZoom] = useState(12);
   const router = useRouter();
 
-  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {

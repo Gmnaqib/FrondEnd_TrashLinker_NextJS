@@ -10,9 +10,14 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { useRouter } from "next/navigation";
 
-const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
+const MAPBOX_ACCESS_TOKEN =
+  "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
 const Signup = () => {
+  const [map, setMap] = useState(null);
+  const [lng, setLng] = useState(106.8456);
+  const [lat, setLat] = useState(-6.2088);
+  const [zoom, setZoom] = useState(12);
   const [data, setData] = useState({
     email: "",
     username: "",
@@ -34,7 +39,7 @@ const Signup = () => {
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
-        center: [106.816666, -6.200000], // Default center (Jakarta)
+        center: [106.816666, -6.2], // Default center (Jakarta)
         zoom: 10,
       });
       mapRef.current = map;
@@ -47,11 +52,20 @@ const Signup = () => {
       });
       map.addControl(geocoder, "top-left"); // Adding geocoder to the map directly
 
+      map.addControl(new mapboxgl.NavigationControl());
+      map.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: { enableHighAccuracy: true },
+          trackUserLocation: true,
+        })
+      );
+  
+
       geocoder.on("result", (e) => {
         // When a result is selected from the geocoder
         const { place_name, geometry } = e.result;
         const [longitude, latitude] = geometry.coordinates;
-        
+
         setData((prevData) => ({
           ...prevData,
           address: place_name,
@@ -66,22 +80,23 @@ const Signup = () => {
         markerRef.current = new mapboxgl.Marker()
           .setLngLat([longitude, latitude])
           .addTo(map);
-        
+
         // Adjust the map to the new location
         map.flyTo({ center: [longitude, latitude], zoom: 14 });
       });
 
       map.on("click", (e) => {
         const { lng, lat } = e.lngLat;
-        
+
         // Use reverse geocoding to fetch the address based on coordinates
         axios
           .get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_ACCESS_TOKEN}`
           )
           .then((response) => {
-            const address = response.data.features[0]?.place_name || "Unknown Location";
-            
+            const address =
+              response.data.features[0]?.place_name || "Unknown Location";
+
             setData((prevData) => ({
               ...prevData,
               address: address,
@@ -93,7 +108,9 @@ const Signup = () => {
             if (markerRef.current) {
               markerRef.current.remove();
             }
-            markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
+            markerRef.current = new mapboxgl.Marker()
+              .setLngLat([lng, lat])
+              .addTo(map);
           })
           .catch((error) => {
             console.error("Error fetching address for click:", error);
@@ -102,15 +119,18 @@ const Signup = () => {
     }
   }, []);
 
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://178.128.221.26:3000/user/register", data);
+      const response = await axios.post(
+        "http://178.128.221.26:3000/user/register",
+        data
+      );
       console.log("Response:", response.data);
 
       const { token, ...user } = response.data;
@@ -118,7 +138,6 @@ const Signup = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       router.push("/auth/signin");
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -170,7 +189,9 @@ const Signup = () => {
             onChange={handleChange}
             className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
-          <label className="block text-gray-700 font-medium">Full Address</label>
+          <label className="block text-gray-700 font-medium">
+            Full Address
+          </label>
           <input
             name="address"
             type="text"
@@ -187,8 +208,8 @@ const Signup = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
-          <Link href="/signin" className="text-blue-600 hover:underline">
+          Already have an account?{" "}
+          <Link href="/auth/signin" className="text-blue-600 hover:underline">
             Sign In
           </Link>
         </p>

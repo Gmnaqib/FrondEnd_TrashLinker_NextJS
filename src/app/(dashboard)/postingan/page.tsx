@@ -27,14 +27,21 @@ const AddPostinganForm = ({ }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+
+    // GET TPA
     axios.get("http://178.128.221.26:3000/tpa").then((response) => {
       setTpaList(response.data.data);
     });
-  }, []);
 
-  useEffect(() => {
+    // GET USER LOCATION
     if (!mapContainerRef.current) return;
 
     const map = new mapboxgl.Map({
@@ -52,6 +59,13 @@ const AddPostinganForm = ({ }) => {
     });
 
     map.addControl(geocoder);
+    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: { enableHighAccuracy: true },
+        trackUserLocation: true,
+      })
+    );
     let marker = new mapboxgl.Marker();
 
     geocoder.on("result", (e) => {
@@ -89,6 +103,16 @@ const AddPostinganForm = ({ }) => {
     mapRef.current = map;
     return () => map.remove();
   }, []);
+
+ 
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/signin");
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null; // Menghindari render sebelum redirect
 
   const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;

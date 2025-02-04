@@ -16,9 +16,15 @@ export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   useEffect(() => {
+    
     const token = localStorage.getItem("token");
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
 
     axios
       .get("http://178.128.221.26:3000/auth/me", {
@@ -35,6 +41,12 @@ export default function Profile() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/signin");
+    }
+  }, [isAuthenticated, router]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
