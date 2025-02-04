@@ -6,6 +6,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import Geocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import axios from "axios";
+import "@/styles/globals.css";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";

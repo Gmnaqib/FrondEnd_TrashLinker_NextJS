@@ -118,7 +118,7 @@ const Postingan = () => {
               value={radius}
               onChange={(e) => setRadius(e.target.value !== "" ? Number(e.target.value) : "")}
               placeholder="Masukkan radius (km)"
-              className="border px-2 py-1 rounded w-32"
+              className="border px-2 py-1 rounded w-50"
             />
             <button
               onClick={handleFilter}

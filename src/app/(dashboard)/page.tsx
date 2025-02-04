@@ -5,14 +5,16 @@ import About from "./about/page";
 
 
 export const metadata: Metadata = {
-  title: "Next.js Starter Template for SaaS Startups - Solid SaaS Boilerplate",
-  description: "This is Home for Solid Pro",
+  title: "TrashLinker",
+  description: "This is Home for TrashLinker",
+  
   // other metadata
 };
 
 export default function Page() {
   return (
     <main>
+    <link rel="icon" href="/logo_trashlinker.png" />
       <About />
     </main>
   );

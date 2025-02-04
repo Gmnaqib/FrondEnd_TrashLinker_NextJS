@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Tabs from "@/components/tabs/Tabs";
 import CardLeader from "@/components/Card/CardLeader";
+import "@/styles/globals.css";
 
 export default function Page() {
   interface Leader {
