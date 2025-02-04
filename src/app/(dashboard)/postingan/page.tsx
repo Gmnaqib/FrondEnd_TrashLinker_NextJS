@@ -131,6 +131,7 @@ const AddPostinganForm = ({ }) => {
       })
       .then((response) => {
         console.log("Post successfully added", response.data);
+        router.push("/home");
       })
       .catch((error) => {
         console.error("Error adding post", error);
