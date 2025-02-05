@@ -6,7 +6,11 @@ import "@/styles/globals.css";
 const Postingan = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState(50); // Default radius 50km
+  const [radius, setRadius] = useState<number | "">("");
+  const [filtered, setFiltered] = useState(false);
+  const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
+  const router = useRouter();
+  const [address, setAddress] = useState('');
 
   interface PostinganItem {
     id: string;
@@ -15,17 +19,12 @@ const Postingan = () => {
     title: string;
     description: string;
     image: string;
+    type: string;
     userAddress: string;
     tpaName: string;
-    type: string;
     schedule: string;
-    volunteer: number;
     volunteerCount: number;
-    onVolunteerClick: () => void;
   }
-
-  const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,16 +36,22 @@ const Postingan = () => {
 
       const fetchPosts = async () => {
         try {
-          const response = await fetch(`http://178.128.221.26:3000/posts?radius=${radius}`, {
+          let url = "http://178.128.221.26:3000/posts";
+          if (filtered && radius !== "") {
+            url += `?radius=${radius}`;
+          }
+          const response = await fetch(url, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           });
+
           const data = await response.json();
           if (data && data.data) {
             setItemsPostingan(data.data);
+        
           }
         } catch (err) {
           setError("Gagal memuat data");
@@ -54,10 +59,13 @@ const Postingan = () => {
           setLoading(false);
         }
       };
-
       fetchPosts();
     }
-  }, [radius, router]);
+  }, [filtered]);
+
+  const handleFilter = () => {
+    setFiltered(true);
+  };
 
   const handleVolunteerClick = async (postId: string) => {
     const token = localStorage.getItem("token");
@@ -77,7 +85,6 @@ const Postingan = () => {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         alert("Berhasil bergabung sebagai volunteer!");
       } else {
@@ -96,40 +103,49 @@ const Postingan = () => {
     return <div>Error: {error}</div>;
   }
 
+  // change lat lon convert to full address
+  
+
+
   return (
-    <section className="overflow-hidden">
-      <div className="mx-auto max-w-c-1390">
-        <div className="flex justify-center">
-          <div className="bg-white w-full flex flex-col items-center">
-            <div className="mb-4">
-              <label className="mr-2">Filter Radius (km):</label>
-              <input
-                type="number"
-                value={radius}
-                onChange={(e) => setRadius(Number(e.target.value))}
-                className="border px-2 py-1 rounded"
-              />
-            </div>
-            {itemsPostingan.map((item) => (
-              <div key={item.id} className="w-full max-w-[800px]">
-                <CardContent
-                  key={item.id}
-                  imageProfile="img/profile.jpg"
-                  name={item.userName}
-                  date={new Date(item.createdAt).toLocaleString()}
-                  title={item.title}
-                  description={item.description}
-                  imageBefore={`http://178.128.221.26:3000${item.image}`}
-                  type={item.type}
-                  city={item.userAddress}
-                  tpa={item.tpaName}
-                  dateVolunteer={new Date(item.schedule).toLocaleDateString()}
-                  volunteer={item.volunteerCount}
-                  onVolunteerClick={() => handleVolunteerClick(item.id)}
-                />
-              </div>
-            ))}
+    <section className="overflow-hidden py-6">
+      <div className="mx-auto max-w-3xl p-4">
+        <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center">
+          <h2 className="text-lg font-semibold mb-2">Filter Postingan</h2>
+          <div className="flex gap-2 items-center mb-4">
+            <input
+              type="number"
+              value={radius}
+              onChange={(e) => setRadius(e.target.value !== "" ? Number(e.target.value) : "")}
+              placeholder="Masukkan radius (km)"
+              className="border px-2 py-1 rounded w-50"
+            />
+            <button
+              onClick={handleFilter}
+              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+            >
+              Filter
+            </button>
           </div>
+        </div>
+        <div className="mt-6 flex flex-col items-center gap-4">
+          {itemsPostingan.map((item) => (
+            <CardContent
+              key={item.id}
+              imageProfile="img/profile.jpg"
+              name={item.userName}
+              date={new Date(item.createdAt).toLocaleString()}
+              title={item.title}
+              description={item.description}
+              imageBefore={`http://178.128.221.26:3000${item.image}`}
+              type={item.type}
+              city={item.userAddress}
+              tpa={item.tpaName}
+              dateVolunteer={new Date(item.schedule).toLocaleDateString()}
+              volunteer={item.volunteerCount}
+              onVolunteerClick={() => handleVolunteerClick(item.id)}
+            />
+          ))}
         </div>
       </div>
     </section>

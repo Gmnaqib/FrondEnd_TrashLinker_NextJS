@@ -11,7 +11,7 @@ const Header = () => {
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathUrl = usePathname();
 
   // Sticky menu
@@ -25,6 +25,9 @@ const Header = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", handleStickyMenu);
+
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
   });
 
   return (
@@ -41,15 +44,15 @@ const Header = () => {
             <Image
               src="/logo.png"
               alt="logo"
-              width={200.03}
-              height={100}
+              width={130.03}
+              height={50}
               className="hidden w-full dark:block"
             />
             <Image
               src="/logo.png"
               alt="logo"
-              width={200.03}
-              height={100}
+              width={130.03}
+              height={50}
               className="w-full dark:hidden"
             />
           </a>
@@ -151,13 +154,22 @@ const Header = () => {
             </ul>
           </nav>
 
-          <div className="mt-7 flex items-center gap-6 xl:mt-0">
-           
-
-            <a className="text-regular font-medium text-waterloo hover:text-primary" href="/auth/signin">Sign In</a>
-            <a className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho" href="/auth/signup">Sign Up</a>
-          
-          </div>
+          {!isAuthenticated && (
+            <div className="mt-7 flex items-center gap-6 xl:mt-0">
+              <a
+                className="text-regular font-medium text-waterloo hover:text-primary"
+                href="/auth/signin"
+              >
+                Sign In
+              </a>
+              <a
+                className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
+                href="/auth/signup"
+              >
+                Sign Up
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </header>

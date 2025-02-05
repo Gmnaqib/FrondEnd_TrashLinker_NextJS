@@ -1,8 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import "@/styles/globals.css";
 
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import Geocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
+
+  
 interface User {
   email: string;
   username: string;
@@ -16,9 +26,15 @@ export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   useEffect(() => {
+    
     const token = localStorage.getItem("token");
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
 
     axios
       .get("http://178.128.221.26:3000/auth/me", {
@@ -35,6 +51,12 @@ export default function Profile() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/signin");
+    }
+  }, [isAuthenticated, router]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
