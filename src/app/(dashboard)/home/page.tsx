@@ -6,6 +6,7 @@ import Tabs from "@/components/tabs/Tabs";
 import CardLeader from "@/components/Card/CardLeader";
 import "@/styles/globals.css";
 
+//Home
 export default function Page() {
   interface Leader {
     userId: string;
