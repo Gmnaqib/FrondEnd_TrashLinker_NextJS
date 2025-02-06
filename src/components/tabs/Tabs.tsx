@@ -10,7 +10,7 @@ const Tabs = () => {
 
   const tabs = [
     { id: 0, title: "Postingan", component: <Postingan /> },
-    { id: 1, title: "Volunteer", component: <Volunteer /> },
+    { id: 1, title: "Dikerjakan", component: <Volunteer /> },
   ];
 
   return (

@@ -34,7 +34,20 @@ const Signin = () => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("/home");
+      
+      switch (user.role) {
+        case "COMMUNITY":
+          router.push("/home");
+          break;
+        case "MASYARAKAT":
+          router.push("/home");
+          break;
+        case "ADMIN":
+          router.push("/admin");
+          break;
+        default:
+          router.push("/auth/signin");
+      }
     } catch (err) {
       setError("Failed to login, please try again.");
     } finally {
