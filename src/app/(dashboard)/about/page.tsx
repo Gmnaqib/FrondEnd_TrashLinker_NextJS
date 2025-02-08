@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@nextui-org/button";
 import CardFeature from "@/components/Card/CardFeature";
-import RecyclingComponent from "@/components/Card/Recycling";
+import Image from "next/image";
 import "@/styles/globals.css";
 
 export default function About() {
@@ -42,7 +42,7 @@ export default function About() {
 
             {/* Right Section */}
             <div className="lg:w-1/2 w-full mt-8 lg:mt-0">
-              <img src="/img/img_about.png" />
+              <Image src="/img/img_about.png" alt="About Image" />
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function About() {
 
         {/* Section 3 */}
         <div className="flex flex-col md:flex-row p-10 space-x-0 md:space-x-10 space-y-8 md:space-y-0">
-          <img
+          <Image
             className="w-full md:w-1/3 p-5 object-cover rounded-lg shadow-lg"
             src="img/img_photo_trash1.png"
             alt="TrashLinker image"
@@ -140,7 +140,7 @@ export default function About() {
               baik!
             </p>
           </div>
-          <img
+          <Image
             className="w-full md:w-96 p-5 object-cover rounded-lg shadow-xl"
             src="img/img_photo_trash2.png"
             alt="TrashLinker daur ulang"

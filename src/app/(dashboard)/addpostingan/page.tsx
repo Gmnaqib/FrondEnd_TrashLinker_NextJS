@@ -11,7 +11,7 @@ import "@/styles/globals.css";
 mapboxgl.accessToken =
   "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
-const AddPostinganForm = ({ }) => {
+const AddPostinganForm = ({}) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,18 +24,26 @@ const AddPostinganForm = ({ }) => {
     fullAddress: "",
   });
 
-  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>([]);
+  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>(
+    []
+  );
+  const [role, setRole] = useState("USER"); // Default ke USER
   const mapContainerRef = useRef(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     if (!token) {
       setIsAuthenticated(false);
       return;
     }
+
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
+    const userRole = user?.role || null;
+    setRole(userRole);
 
     // GET TPA
     axios.get("http://178.128.221.26:3000/tpa").then((response) => {
@@ -54,7 +62,7 @@ const AddPostinganForm = ({ }) => {
 
     const geocoder = new Geocoder({
       accessToken: mapboxgl.accessToken || "",
-      mapboxgl: mapboxgl,
+      mapboxgl: mapboxgl as any,
       marker: false,
       placeholder: "Search for location",
     });
@@ -105,8 +113,6 @@ const AddPostinganForm = ({ }) => {
     return () => map.remove();
   }, []);
 
- 
-
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/auth/signin");
@@ -115,7 +121,7 @@ const AddPostinganForm = ({ }) => {
 
   if (!isAuthenticated) return null; // Menghindari render sebelum redirect
 
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -134,7 +140,7 @@ const AddPostinganForm = ({ }) => {
     }
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
@@ -212,18 +218,26 @@ const AddPostinganForm = ({ }) => {
             className="w-full border rounded-lg p-2 mt-1"
           >
             <option value="Report">Report</option>
-            <option value="Volunteer">Volunteer</option>
+            {role === "COMMUNITY" && (
+              <option value="Volunteer">Volunteer</option>
+            )}
           </select>
 
-          <label className="block text-gray-700 font-medium">Schedule</label>
-          <input
-            type="date"
-            name="schedule"
-            value={formData.schedule}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1"
-            required
-          />
+          {role === "COMMUNITY" && (
+            <>
+              <label className="block text-gray-700 font-medium">
+                Schedule
+              </label>
+              <input
+                type="date"
+                name="schedule"
+                value={formData.schedule}
+                onChange={handleChange}
+                className="w-full border rounded-lg p-2 mt-1"
+                required
+              />
+            </>
+          )}
 
           <label className="block text-gray-700 font-medium">TPA</label>
           <select

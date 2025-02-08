@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Tabs from "@/components/tabs/Tabs";
 import CardLeader from "@/components/Card/CardLeader";
 import "@/styles/globals.css";
+import TabsHome from "@/components/tabs/home/TabsHome";
 
 //Home
 export default function Page() {
@@ -28,11 +28,12 @@ export default function Page() {
     }
 
     axios
-      .get("http://178.128.221.26:3000/volunteer/leaderboard", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => setLeaders(response.data))
-      .catch((error) => console.error("Error fetching leaderboard data:", error));
+  .get("http://178.128.221.26:3000/volunteer/leaderboard", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then((response) => setLeaders(response.data.leaderboard || [])) // Pastikan mengambil array dari leaderboard
+  .catch((error) => console.error("Error fetching leaderboard data:", error));
+
   }, []);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function Page() {
             </div>
           </div>
           <div className="bg-white shadow-lg rounded-lg p-6 flex-1 md:flex-[2] self-stretch">
-            <Tabs />
+            <TabsHome />
           </div>
         </div>
       </div>

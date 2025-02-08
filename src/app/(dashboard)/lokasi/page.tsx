@@ -71,7 +71,6 @@ export default function Home() {
           new mapboxgl.Popup().setHTML(
             `<div style='font-family: sans-serif; padding: 10px;'>
               <h3 style='margin-bottom: 5px;'>${item.tpaName}</h3>
-              <img src='${item.image}' alt='${item.tpaName}' style='width: 100%; border-radius: 8px;'/>
               <p style='margin: 5px 0;'>${item.description}</p>
               <small>${item.tpaAddress}</small>
             </div>`
