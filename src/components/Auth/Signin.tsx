@@ -39,7 +39,7 @@ const Signin = () => {
         case "COMMUNITY":
           router.push("/home");
           break;
-        case "MASYARAKAT":
+        case "USER":
           router.push("/home");
           break;
         case "ADMIN":
