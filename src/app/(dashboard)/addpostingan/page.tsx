@@ -1,21 +1,30 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import mapboxgl, { Map as MapboxMap } from "mapbox-gl";
 import Geocoder from "@mapbox/mapbox-gl-geocoder";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import axios from "axios";
 import "@/styles/globals.css";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
+mapboxgl.accessToken = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
-const AddPostinganForm = ({}) => {
-  const [formData, setFormData] = useState({
+const AddPostinganForm = () => {
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    image: File | null;
+    longitude: number;
+    latitude: number;
+    type: "Report" | "Volunteer";
+    schedule: string;
+    tpaId: string;
+    fullAddress: string;
+  }>({
     title: "",
     description: "",
-    image: null as File | null,
+    image: null,
     longitude: 0,
     latitude: 0,
     type: "Report",
@@ -24,11 +33,9 @@ const AddPostinganForm = ({}) => {
     fullAddress: "",
   });
 
-  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>(
-    []
-  );
-  const [role, setRole] = useState("USER"); // Default ke USER
-  const mapContainerRef = useRef(null);
+  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>([]);
+  const [role, setRole] = useState<"USER" | "COMMUNITY">("USER");
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
@@ -42,15 +49,13 @@ const AddPostinganForm = ({}) => {
 
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : null;
-    const userRole = user?.role || null;
+    const userRole: "USER" | "COMMUNITY" = user?.role || "USER";
     setRole(userRole);
 
-    // GET TPA
     axios.get("http://178.128.221.26:3000/tpa").then((response) => {
       setTpaList(response.data.data);
     });
 
-    // GET USER LOCATION
     if (!mapContainerRef.current) return;
 
     const map = new mapboxgl.Map({
@@ -61,11 +66,12 @@ const AddPostinganForm = ({}) => {
     });
 
     const geocoder = new Geocoder({
-      accessToken: mapboxgl.accessToken || "",
-      mapboxgl: mapboxgl as any,
+      accessToken: mapboxgl.accessToken as string,
+     
       marker: false,
       placeholder: "Search for location",
     });
+    
 
     map.addControl(geocoder);
     map.addControl(new mapboxgl.NavigationControl());
@@ -75,7 +81,8 @@ const AddPostinganForm = ({}) => {
         trackUserLocation: true,
       })
     );
-    let marker = new mapboxgl.Marker();
+
+    const marker = new mapboxgl.Marker();
 
     geocoder.on("result", (e) => {
       const { center, place_name } = e.result;
@@ -119,9 +126,9 @@ const AddPostinganForm = ({}) => {
     }
   }, [isAuthenticated, router]);
 
-  if (!isAuthenticated) return null; // Menghindari render sebelum redirect
+  if (!isAuthenticated) return null;
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -131,20 +138,18 @@ const AddPostinganForm = ({}) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      if (e.target.files && e.target.files.length > 0) {
-        setFormData((prevData) => ({
-          ...prevData,
-          image: e.target.files ? e.target.files[0] : null,
-        }));
-      }
+      setFormData((prevData) => ({
+        ...prevData,
+        image: e.target.files ? e.target.files[0] : null,
+      }));
     }
   };
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formDataToSend = new FormData();
-    (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
-      formDataToSend.append(key, formData[key] as any);
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value as Blob | string);
     });
 
     const token = localStorage.getItem("token");
@@ -160,67 +165,32 @@ const AddPostinganForm = ({}) => {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then((response) => {
-        console.log("Post successfully added", response.data);
+      .then(() => {
         router.push("/home");
       })
       .catch((error) => {
         console.error("Error adding post", error);
-        if (error.response) {
-          console.error("Response Data:", error.response.data);
-        }
       });
   };
 
   return (
     <section className="overflow-hidden pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6" encType="multipart/form-data">
         <h2 className="text-2xl font-bold mb-4">Add New Postingan</h2>
         <div className="space-y-4">
           <label className="block text-gray-700 font-medium">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1"
-            required
-          />
+          <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1" required />
 
           <label className="block text-gray-700 font-medium">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1"
-            rows={4}
-            required
-          ></textarea>
+          <textarea name="description" value={formData.description} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1" rows={4} required />
 
           <label className="block text-gray-700 font-medium">Image</label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleImageChange}
-            className="w-full border rounded-lg p-2 mt-1"
-            required
-          />
+          <input type="file" name="image" onChange={handleImageChange} className="w-full border rounded-lg p-2 mt-1" required />
 
           <label className="block text-gray-700 font-medium">Type</label>
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1"
-          >
+          <select name="type" value={formData.type} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1">
             <option value="Report">Report</option>
-            {role === "COMMUNITY" && (
-              <option value="Volunteer">Volunteer</option>
-            )}
+            {role === "COMMUNITY" && <option value="Volunteer">Volunteer</option>}
           </select>
 
           {role === "COMMUNITY" && (
@@ -255,25 +225,12 @@ const AddPostinganForm = ({}) => {
             ))}
           </select>
 
-          <label className="block text-gray-700 font-medium">
-            Full Address
-          </label>
-          <input
-            type="text"
-            name="fullAddress"
-            value={formData.fullAddress}
-            className="w-full border rounded-lg p-2 mt-1"
-            readOnly
-          />
+          <label className="block text-gray-700 font-medium">Full Address</label>
+          <input type="text" name="fullAddress" value={formData.fullAddress} className="w-full border rounded-lg p-2 mt-1" readOnly />
 
           <div ref={mapContainerRef} className="h-64 w-full mt-2 rounded-lg" />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-blue-600"
-        >
-          Add Postingan
-        </button>
+        <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-blue-600">Add Postingan</button>
       </form>
     </section>
   );

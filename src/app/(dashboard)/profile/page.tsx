@@ -27,7 +27,6 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

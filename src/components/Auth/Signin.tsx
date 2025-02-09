@@ -48,7 +48,7 @@ const Signin = () => {
         default:
           router.push("/auth/signin");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to login, please try again.");
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ const Signin = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Dont have an account?{' '}
           <Link href="/auth/signup" className="text-primary hover:underline">
             Sign Up
           </Link>

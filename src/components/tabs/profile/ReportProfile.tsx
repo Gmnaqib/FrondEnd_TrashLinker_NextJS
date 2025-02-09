@@ -46,7 +46,7 @@ const ReportProfile = () => {
           if (data && data.data) {
             setItemsPostingan(data.data);
           }
-        } catch (err) {
+        } catch  {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -82,7 +82,7 @@ const ReportProfile = () => {
       } else {
         alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
       }
-    } catch (error) {
+    } catch  {
       alert("Terjadi kesalahan saat menghubungi server.");
     }
   };

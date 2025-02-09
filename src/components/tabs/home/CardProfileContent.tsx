@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Globe, Handshake, Trash2, Users } from "lucide-react";
+import { Calendar, Globe, Trash2, Users } from "lucide-react";
 
 type CardProfileContent = {
   imageProfile: string;

@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import "@/styles/globals.css";
 
 export default function Dashboard() {
-  const [posts, setPosts] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
-  const [reports, setReports] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
+  //const [posts, setPosts] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
+  //const [reports, setReports] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
   const [tpa, setTpa] = useState<{ id: number; tpa_name: string; tpa_location: string; tpa_image: string; tpa_description: string }[]>([]);
-  const [leaderboard, setLeaderboard] = useState<{ id: number; name: string; points: number }[]>([]);
+  //const [leaderboard, setLeaderboard] = useState<{ id: number; name: string; points: number }[]>([]);
   const [newTpa, setNewTpa] = useState({ tpa_name: "", tpa_location: "", tpa_image: "", tpa_description: "" });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -16,15 +16,15 @@ export default function Dashboard() {
 
     const fetchData = async () => {
       const endpoints = ["/posts", "/posts/report", "/tpa", "/volunteer/leaderboard"];
-      const setters = [setPosts, setReports, setTpa, setLeaderboard];
+      //const setters = [setPosts, setReports, setTpa, setLeaderboard];
       
       for (let i = 0; i < endpoints.length; i++) {
         try {
-          const res = await fetch(`${url}${endpoints[i]}`, {
+          await fetch(`${url}${endpoints[i]}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const data = await res.json();
-          setters[i](data.data || data.leaderboard);
+          //const data = await res.json();
+          //setters[i](data.data || data.leaderboard);
         } catch (error) {
           console.error("Error fetching data:", error);
         }

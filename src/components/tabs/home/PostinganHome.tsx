@@ -10,7 +10,7 @@ const PostinganHome = () => {
   const [filtered, setFiltered] = useState(false);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
   const router = useRouter();
-  const [role, setRole] = useState<string | null>(null);
+  //const [role, setRole] = useState<string | null>(null);
 
   interface PostinganItem {
     id: string;
@@ -29,11 +29,11 @@ const PostinganHome = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
-      const userData = localStorage.getItem("user");
-      const user = userData ? JSON.parse(userData) : null;
-      const userRole = user?.role || null;
+      // const userData = localStorage.getItem("user");
+      // const user = userData ? JSON.parse(userData) : null;
+      // const userRole = user?.role || null;
       
-      setRole(userRole); // Simpan role di state
+      // setRole(userRole);
 
       if (!token) {
         router.push("/auth/signin");
@@ -60,7 +60,7 @@ const PostinganHome = () => {
           if (data?.data) {
             setItemsPostingan(data.data);
           }
-        } catch (err) {
+        } catch  {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -101,7 +101,7 @@ const PostinganHome = () => {
       } else {
         alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
       }
-    } catch (error) {
+    } catch  {
       alert("Terjadi kesalahan saat menghubungi server.");
     }
   };

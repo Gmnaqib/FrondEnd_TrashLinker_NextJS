@@ -59,7 +59,7 @@ const VolunteerHome = () => {
 
       const fetchPosts = async () => {
         try {
-          let url =
+          const url =
             userRole === "COMMUNITY"
               ? "http://178.128.221.26:3000/posts/report"
               : "http://178.128.221.26:3000/volunteer/me";
@@ -76,7 +76,7 @@ const VolunteerHome = () => {
 
           const data = await response.json();
           setItemsPostingan(data.data || []);
-        } catch (err) {
+        } catch  {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -113,7 +113,7 @@ const VolunteerHome = () => {
             : item
         )
       );
-    } catch (err) {
+    } catch  {
       setError("Gagal melakukan check-in");
     }
   };
@@ -141,80 +141,80 @@ const VolunteerHome = () => {
           "postVolunteerId" in item ? item.postVolunteerId !== id : true
         )
       );
-    } catch (err) {
+    } catch  {
       setError("Gagal membatalkan");
     }
   };
 
-  const handleConvertToVolunteer = async (id: string, schedule: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  // const handleConvertToVolunteer = async (id: string, schedule: string) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) return;
 
-      const response = await fetch(
-        `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "Volunteer",
-            schedule: schedule, // Format: "YYYY-MM-DD HH:mm:ss"
-          }),
-        }
-      );
+  //     const response = await fetch(
+  //       `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           type: "Volunteer",
+  //           schedule: schedule, // Format: "YYYY-MM-DD HH:mm:ss"
+  //         }),
+  //       }
+  //     );
 
-      if (!response.ok) throw new Error("Gagal mengubah ke Volunteer");
+  //     if (!response.ok) throw new Error("Gagal mengubah ke Volunteer");
 
-      // Perbarui state setelah berhasil
-      setItemsPostingan((prev) =>
-        prev.map((item) =>
-          "id" in item && item.id === id
-            ? { ...item, type: "Volunteer", schedule }
-            : item
-        )
-      );
-    } catch (err) {
-      setError("Gagal mengubah ke Volunteer");
-    }
-  };
+  //     // Perbarui state setelah berhasil
+  //     setItemsPostingan((prev) =>
+  //       prev.map((item) =>
+  //         "id" in item && item.id === id
+  //           ? { ...item, type: "Volunteer", schedule }
+  //           : item
+  //       )
+  //     );
+  //   } catch (err) {
+  //     setError("Gagal mengubah ke Volunteer");
+  //   }
+  // };
 
-  const handleCancelVolunteer = async (id: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  // const handleCancelVolunteer = async (id: string) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) return;
 
-      const response = await fetch(
-        `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "Report",
-            schedule: null,
-          }),
-        }
-      );
+  //     const response = await fetch(
+  //       `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           type: "Report",
+  //           schedule: null,
+  //         }),
+  //       }
+  //     );
 
-      if (!response.ok) throw new Error("Gagal membatalkan Volunteer");
+  //     if (!response.ok) throw new Error("Gagal membatalkan Volunteer");
 
-      // Perbarui state setelah berhasil
-      setItemsPostingan((prev) =>
-        prev.map((item) =>
-          "id" in item && item.id === id
-            ? { ...item, type: "Report", schedule: "" }
-            : item
-        )
-      );
-    } catch (err) {
-      setError("Gagal membatalkan Volunteer");
-    }
-  };
+  //     // Perbarui state setelah berhasil
+  //     setItemsPostingan((prev) =>
+  //       prev.map((item) =>
+  //         "id" in item && item.id === id
+  //           ? { ...item, type: "Report", schedule: "" }
+  //           : item
+  //       )
+  //     );
+  //   } catch (err) {
+  //     setError("Gagal membatalkan Volunteer");
+  //   }
+  // };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

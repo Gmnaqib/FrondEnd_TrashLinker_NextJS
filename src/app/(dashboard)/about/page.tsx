@@ -42,7 +42,7 @@ export default function About() {
 
             {/* Right Section */}
             <div className="lg:w-1/2 w-full mt-8 lg:mt-0">
-              <Image src="/img/img_about.png" alt="About Image" />
+              <Image src="/img/img_about.png" alt="About Image" width={500} height={500} />
             </div>
           </div>
         </div>
@@ -75,8 +75,9 @@ export default function About() {
         <div className="flex flex-col md:flex-row p-10 space-x-0 md:space-x-10 space-y-8 md:space-y-0">
           <Image
             className="w-full md:w-1/3 p-5 object-cover rounded-lg shadow-lg"
-            src="img/img_photo_trash1.png"
+            src="/img/img_photo_trash1.png"
             alt="TrashLinker image"
+            width={500} height={500}
           />
           <div className="flex flex-col justify-center">
             <h2 className="text-customGreen text-4xl font-semibold p-3 md:p-0">
@@ -142,8 +143,9 @@ export default function About() {
           </div>
           <Image
             className="w-full md:w-96 p-5 object-cover rounded-lg shadow-xl"
-            src="img/img_photo_trash2.png"
+            src="/img/img_photo_trash2.png"
             alt="TrashLinker daur ulang"
+            width={500} height={500}
           />
         </div>
       </div>

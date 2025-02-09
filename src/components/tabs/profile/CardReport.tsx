@@ -57,7 +57,7 @@ const CardReport: React.FC<CardReport> = ({
           src={imageBefore}
           className="w-full h-auto rounded-lg mb-4"
           alt="Before Image"
-          onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+          //onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
         />
       ) : (
         <div className="flex justify-center items-center bg-gray-100 rounded-lg h-40 mb-4">
