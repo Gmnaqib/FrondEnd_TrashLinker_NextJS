@@ -74,7 +74,7 @@ const Signin = () => {
             placeholder="Email"
             value={data.email}
             onChange={(e) => setData({ ...data, email: e.target.value })}
-            className="w-full rounded-lg border p-3 text-gray-800 dark:text-white dark:bg-gray-700 focus:ring focus:ring-primary"
+            className="w-full rounded-lg border p-3 text-gray-800 dark:text-white dark:bg-gray-700 focus:ring focus:ring-green-500"
             required
           />
           <input
@@ -82,7 +82,7 @@ const Signin = () => {
             placeholder="Password"
             value={data.password}
             onChange={(e) => setData({ ...data, password: e.target.value })}
-            className="w-full rounded-lg border p-3 text-gray-800 dark:text-white dark:bg-gray-700 focus:ring focus:ring-primary"
+            className="w-full rounded-lg border p-3 text-gray-800 dark:text-white dark:bg-gray-700 focus:ring focus:ring-green-500"
             required
           />
           {error && <p className="text-sm text-red-500">{error}</p>}
@@ -96,7 +96,7 @@ const Signin = () => {
         </form>
         <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
           Dont have an account?{' '}
-          <Link href="/auth/signup" className="text-primary hover:underline">
+          <Link href="/auth/signup" className="text-meta hover:underline">
             Sign Up
           </Link>
         </p>

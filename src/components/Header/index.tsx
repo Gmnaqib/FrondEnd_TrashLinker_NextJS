@@ -113,12 +113,12 @@ const Header = () => {
                     <>
                       <button
                         onClick={() => setDropdownToggler(!dropdownToggler)}
-                        className="flex cursor-pointer items-center justify-between gap-3 hover:text-primary"
+                        className="flex cursor-pointer items-center justify-between gap-3 hover:text-green-600"
                       >
                         {menuItem.title}
                         <span>
                           <svg
-                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-primary"
+                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-green-600"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                           >
@@ -131,7 +131,7 @@ const Header = () => {
                         className={`dropdown ${dropdownToggler ? "flex" : ""}`}
                       >
                         {menuItem.submenu.map((item, key) => (
-                          <li key={key} className="hover:text-primary">
+                          <li key={key} className="text-meta">
                             <Link href={item.path || "#"}>{item.title}</Link>
                           </li>
                         ))}
@@ -142,8 +142,8 @@ const Header = () => {
                       href={`${menuItem.path}`}
                       className={
                         pathUrl === menuItem.path
-                          ? "text-primary hover:text-primary"
-                          : "hover:text-primary"
+                          ? "text-meta hover:text-meta"
+                          : "hover:text-meta"
                       }
                     >
                       {menuItem.title}
@@ -157,13 +157,13 @@ const Header = () => {
           {!isAuthenticated && (
             <div className="mt-7 flex items-center gap-6 xl:mt-0">
               <a
-                className="text-regular font-medium text-waterloo hover:text-primary"
+                className="text-regular font-medium text-waterloo hover:text-meta"
                 href="/auth/signin"
               >
                 Sign In
               </a>
               <a
-                className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
+                className="flex items-center justify-center rounded-full bg-green-500 px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-green-500"
                 href="/auth/signup"
               >
                 Sign Up
