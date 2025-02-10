@@ -40,6 +40,8 @@ const AddPostinganForm = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -52,7 +54,7 @@ const AddPostinganForm = () => {
     const userRole: "USER" | "COMMUNITY" = user?.role || "USER";
     setRole(userRole);
 
-    axios.get("http://178.128.221.26:3000/tpa").then((response) => {
+    axios.get(`${apiUrl}/tpa`).then((response) => {
       setTpaList(response.data.data);
     });
 
@@ -159,7 +161,7 @@ const AddPostinganForm = () => {
     }
 
     axios
-      .post("http://178.128.221.26:3000/posts", formDataToSend, {
+      .post(`${apiUrl}/posts`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

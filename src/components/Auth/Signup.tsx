@@ -27,7 +27,7 @@ const Signup = () => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const router = useRouter();
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
       mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -122,7 +122,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://178.128.221.26:3000/user/register",
+        `${apiUrl}/user/register`,
         data
       );
       console.log("Response:", response.data);

@@ -15,7 +15,7 @@ const VolunteerHome = () => {
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
   const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   // Interface untuk COMMUNITY (Laporan)
   interface CommunityPostingan {
     id: string;
@@ -62,8 +62,8 @@ const VolunteerHome = () => {
         try {
           const url =
             userRole === "COMMUNITY"
-              ? "http://178.128.221.26:3000/posts/report"
-              : "http://178.128.221.26:3000/volunteer/me";
+              ? `${apiUrl}/posts/report`
+              : `${apiUrl}/volunteer/me`;
 
           const response = await fetch(url, {
             method: "GET",
@@ -94,7 +94,7 @@ const VolunteerHome = () => {
       if (!token) return;
 
       const response = await fetch(
-        `http://178.128.221.26:3000/volunteer/${id}`,
+        `${apiUrl}/volunteer/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -104,6 +104,9 @@ const VolunteerHome = () => {
           body: JSON.stringify({ checkin: 1 }),
         }
       );
+
+      console.log("Response status:", response.status);
+      console.log("Response body:", await response.text());
 
       if (!response.ok) throw new Error("Gagal melakukan check-in");
 
@@ -125,7 +128,7 @@ const VolunteerHome = () => {
       if (!token) return;
 
       const response = await fetch(
-        `http://178.128.221.26:3000/volunteer/${id}`,
+        `${apiUrl}/volunteer/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -166,18 +169,20 @@ const VolunteerHome = () => {
                 <CardContent
                   title={item.title}
                   createdAt={
-                    "updatedAt" in item
-                      ? new Date(item.updatedAt).toLocaleDateString()
-                      : new Date(item.createdAt).toLocaleDateString()
+                    "schedule" in item ? item.schedule : item.createdAt
                   }
                   onCheckinClick={() =>
                     handleCheckin(
-                      "postVolunteerId" in item ? Number(item.postVolunteerId) : Number(item.id)
+                      "postVolunteerId" in item
+                        ? Number(item.postVolunteerId)
+                        : Number(item.id)
                     )
                   }
                   onCancelClick={() =>
                     handleCancel(
-                      "postVolunteerId" in item ? Number(item.postVolunteerId) : Number(item.id)
+                      "postVolunteerId" in item
+                        ? Number(item.postVolunteerId)
+                        : Number(item.id)
                     )
                   }
                   isCheckedIn={"checkin" in item && item.checkin === 1}

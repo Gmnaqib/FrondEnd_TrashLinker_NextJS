@@ -13,6 +13,7 @@ type CardContent = {
   type: string;
   dateVolunteer: string;
   volunteer: number;
+  isJoined: boolean;
   onVolunteerClick: () => void;
 };
 
@@ -28,11 +29,15 @@ const CardContent: React.FC<CardContent> = ({
   type,
   dateVolunteer,
   volunteer,
-  onVolunteerClick
+  isJoined,
+  onVolunteerClick,
 }) => {
-
   const formatDate = (dateStr: string) => {
-    const options: Intl.DateTimeFormatOptions = { day: "2-digit", month: "long", year: "numeric" };
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    };
     return new Date(dateStr).toLocaleDateString("id-ID", options);
   };
 
@@ -57,7 +62,9 @@ const CardContent: React.FC<CardContent> = ({
           src={imageBefore}
           className="w-full h-auto rounded-lg mb-4"
           alt="Before Image"
-          onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+          onError={(e) =>
+            ((e.target as HTMLImageElement).style.display = "none")
+          }
         />
       ) : (
         <div className="flex justify-center items-center bg-gray-100 rounded-lg h-40 mb-4">
@@ -91,12 +98,19 @@ const CardContent: React.FC<CardContent> = ({
 
       {/* Button */}
       {type !== "report" && (
+       
         <button
-          onClick={onVolunteerClick}
-          className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 w-full text-center"
-        >
-          Volunteer
-        </button>
+        onClick={onVolunteerClick}
+        disabled={isJoined}
+        className={`py-2 px-4 rounded-lg w-full text-center transition duration-300 ${
+          isJoined
+            ? "bg-gray-400 text-white cursor-not-allowed"
+            : "bg-green-500 text-white hover:bg-green-600"
+        }`}
+      >
+        {isJoined ? "Mengikuti Volunteer" : "Volunteer"}
+      </button>
+      
       )}
     </div>
   );

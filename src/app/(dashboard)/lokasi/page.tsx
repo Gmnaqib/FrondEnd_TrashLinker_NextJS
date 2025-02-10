@@ -24,6 +24,7 @@ export default function Home() {
   const [lat] = useState(-6.2088);
   const [zoom] = useState(12);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,7 +33,7 @@ export default function Home() {
       return;
     }
 
-    fetch("http://178.128.221.26:3000/posts", {
+    fetch(`${apiUrl}/posts`, {
       headers: {
         "Authorization": `Bearer ${token}`
       }

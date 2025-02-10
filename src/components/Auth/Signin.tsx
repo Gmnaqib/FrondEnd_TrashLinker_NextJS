@@ -10,6 +10,8 @@ const Signin = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -29,7 +31,7 @@ const Signin = () => {
     }
 
     try {
-      const response = await axios.post("http://178.128.221.26:3000/auth/login", data);
+      const response = await axios.post(`${apiUrl}/auth/login`, data);
       const { token, ...user } = response.data.data;
 
       localStorage.setItem("token", token);
