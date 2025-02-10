@@ -22,14 +22,14 @@ const CardContent: React.FC<CardContentProps> = ({ title, createdAt, isCheckedIn
         <button 
           onClick={onCheckinClick}
           disabled={isCheckedIn}
-          className={`px-4 py-2 font-semibold rounded-lg transition duration-200 ${isCheckedIn ? 'bg-gray-300 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-400'}`}
+          className={`px-4 py-2 font-semibold rounded-lg transition duration-200 ${isCheckedIn ? 'bg-gray-300 text-gray-700 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-400'}`}
         >
           {isCheckedIn ? "Checked-in" : "Check-in"}
         </button>
         <button 
           onClick={onCancelClick}
           disabled={isCheckedIn}
-          className={`px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg transition duration-200 ${isCheckedIn ? 'bg-gray-300 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-400'}`}
+          className={`px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg transition duration-200 ${isCheckedIn ? 'bg-gray-300 text-gray-700 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-400'}`}
         >
           Cancel
         </button>

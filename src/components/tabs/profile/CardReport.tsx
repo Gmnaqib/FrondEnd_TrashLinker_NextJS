@@ -93,7 +93,7 @@ const CardReport: React.FC<CardReport> = ({
       {type !== "report" && (
         <button
           onClick={onVolunteerClick}
-          className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 w-full text-center"
+          className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 w-full text-center"
         >
           Report To Volunteer
         </button>

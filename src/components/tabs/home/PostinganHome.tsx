@@ -9,8 +9,9 @@ const PostinganHome = () => {
   const [radius, setRadius] = useState<number | "">("");
   const [filtered, setFiltered] = useState(false);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
+  const [joinedPosts, setJoinedPosts] = useState<number[]>([]);
   const router = useRouter();
-  //const [role, setRole] = useState<string | null>(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   interface PostinganItem {
     id: string;
@@ -29,11 +30,6 @@ const PostinganHome = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
-      // const userData = localStorage.getItem("user");
-      // const user = userData ? JSON.parse(userData) : null;
-      // const userRole = user?.role || null;
-      
-      // setRole(userRole);
 
       if (!token) {
         router.push("/auth/signin");
@@ -42,7 +38,7 @@ const PostinganHome = () => {
 
       const fetchData = async () => {
         try {
-          let url = "http://178.128.221.26:3000/posts"
+          let url = `${apiUrl}/posts`;
 
           if (filtered && radius !== "") {
             url += `?radius=${radius}`;
@@ -60,7 +56,7 @@ const PostinganHome = () => {
           if (data?.data) {
             setItemsPostingan(data.data);
           }
-        } catch  {
+        } catch {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -70,6 +66,32 @@ const PostinganHome = () => {
       fetchData();
     }
   }, [filtered, radius]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const fetchJoinedPosts = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/volunteer/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        const data = await response.json();
+        if (response.ok && data?.data) {
+          setJoinedPosts(data.data.map((volunteer: any) => volunteer.postId));
+        }
+      } catch {
+        console.error("Gagal memuat data volunteer");
+      }
+    };
+  
+    fetchJoinedPosts();
+  }, []);
 
   const handleFilter = () => {
     setFiltered(true);
@@ -83,25 +105,23 @@ const PostinganHome = () => {
     }
 
     try {
-      const response = await fetch(
-        "http://178.128.221.26:3000/volunteer/join",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ postId }),
-        }
-      );
+      const response = await fetch(`${apiUrl}/volunteer/join`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId }),
+      });
 
       const data = await response.json();
       if (response.ok) {
         alert("Berhasil bergabung sebagai volunteer!");
+        setJoinedPosts((prev) => [...prev, Number(postId)]);
       } else {
         alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
       }
-    } catch  {
+    } catch {
       alert("Terjadi kesalahan saat menghubungi server.");
     }
   };
@@ -113,7 +133,6 @@ const PostinganHome = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
 
   return (
     <section className="overflow-hidden py-6">
@@ -132,7 +151,7 @@ const PostinganHome = () => {
             />
             <button
               onClick={handleFilter}
-              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
             >
               Filter
             </button>
@@ -140,6 +159,11 @@ const PostinganHome = () => {
         </div>
         <div className="mt-6 flex flex-col items-center gap-4">
           {itemsPostingan.map((item) => (
+            
+
+            console.log("Post ID:", item.id, "Joined Posts:", joinedPosts),
+            console.log("isJoined:", Number(joinedPosts) == (Number(item.id))),
+
             <CardContent
               key={item.id}
               imageProfile="img/profile.jpg"
@@ -147,10 +171,12 @@ const PostinganHome = () => {
               date={new Date(item.createdAt).toLocaleString()}
               title={item.title}
               description={item.description}
-              imageBefore={`http://178.128.221.26:3000${item.image}`}
+              imageBefore={`${apiUrl}${item.image}`}
               type={item.type}
               city={item.userAddress}
               tpa={item.tpaName}
+              //isJoined={Number(joinedPosts) == (Number(item.id))}
+              isJoined={joinedPosts.includes(Number(item.id))}
               dateVolunteer={new Date(item.schedule).toLocaleDateString()}
               volunteer={item.volunteerCount}
               onVolunteerClick={() => handleVolunteerClick(item.id)}

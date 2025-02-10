@@ -18,6 +18,7 @@ export default function Page() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,7 +29,7 @@ export default function Page() {
     }
 
     axios
-      .get("http://178.128.221.26:3000/volunteer/leaderboard", {
+      .get(`${apiUrl}/volunteer/leaderboard`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => setLeaders(response.data.data || [])) // Access response.data.data

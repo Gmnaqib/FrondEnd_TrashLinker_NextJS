@@ -27,6 +27,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,7 +37,7 @@ export default function Profile() {
     }
 
     axios
-      .get(`http://178.128.221.26:3000/auth/me`, {
+      .get(`${apiUrl}/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,8 +124,10 @@ const EditProfileMap = ({ user }: { user: User }) => {
   const [longitude, setLongitude] = useState(user.longitude);
   const [latitude, setLatitude] = useState(user.latitude);
   const [address, setAddress] = useState(user.address);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
+    
     // Inisialisasi Peta
     if (mapContainerRef.current) {
       mapRef.current = new mapboxgl.Map({
@@ -194,9 +197,10 @@ const EditProfileMap = ({ user }: { user: User }) => {
 
   // Fungsi untuk Mengirim Data ke API
   const handleSave = async () => {
+    
     try {
       console.log("token", token);
-      const response = await fetch("http://178.128.221.26:3000/user/me", {
+      const response = await fetch(`${apiUrl}/user/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -257,7 +261,7 @@ const EditProfileMap = ({ user }: { user: User }) => {
 
       <button
         onClick={handleSave}
-        className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md w-full"
+        className="mt-4 bg-green-600 text-white py-2 px-4 rounded-md w-full"
       >
         Simpan Perubahan
       </button>

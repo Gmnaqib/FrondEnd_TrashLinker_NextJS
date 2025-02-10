@@ -8,6 +8,7 @@ const ReportProfile = () => {
   const [error, setError] = useState<string | null>(null);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   interface PostinganItem {
     id: string;
@@ -34,7 +35,7 @@ const ReportProfile = () => {
 
       const fetchPosts = async () => {
         try {
-          const response = await fetch("http://178.128.221.26:3000/posts/report", {
+          const response = await fetch(`${apiUrl}/posts/report`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,7 +65,7 @@ const ReportProfile = () => {
     }
 
     try {
-      const response = await fetch(`http://178.128.221.26:3000/posts/${postId}/addVolunteer`, {
+      const response = await fetch(`${apiUrl}/posts/${postId}/addVolunteer`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -107,7 +108,7 @@ const ReportProfile = () => {
               date={new Date(item.createdAt).toLocaleString()}
               title={item.title}
               description={item.description}
-              imageBefore={`http://178.128.221.26:3000${item.image}`}
+              imageBefore={`${apiUrl}${item.image}`}
               type={item.type}
               city={item.fullAddress}
               tpa={item.tpaName || "Tidak Ada TPA"}

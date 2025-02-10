@@ -30,12 +30,13 @@ export default function Dashboard() {
     tpa_description: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : null;
     const userRole: "USER" | "ADMIN" = user?.role || "USER";
-
+    
     if (userRole !== "ADMIN") {
       router.push("/");
     }
@@ -43,22 +44,22 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const url = "http://178.128.221.26:3000";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const fetchData = async () => {
       try {
         const [postsRes, reportsRes, tpaRes, leaderboardRes] =
           await Promise.all([
-            fetch(`${url}/posts`, {
+            fetch(`${apiUrl}/posts`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch(`${url}/posts/report`, {
+            fetch(`${apiUrl}/posts/report`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch(`${url}/tpa`, {
+            fetch(`${apiUrl}/tpa`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch(`${url}/volunteer/leaderboard`, {
+            fetch(`${apiUrl}/volunteer/leaderboard`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);
@@ -93,13 +94,14 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     router.push("/auth/signin");
   };
 
   const handleTpaSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const url = "http://178.128.221.26:3000/tpa";
+    const url = `${apiUrl}/tpa`;
 
     const formData = new FormData();
     formData.append("tpa_name", newTpa.tpa_name);
@@ -174,7 +176,7 @@ export default function Dashboard() {
             />
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded"
+              className="w-full bg-green-500 text-white p-2 rounded"
             >
               Add TPA
             </button>
