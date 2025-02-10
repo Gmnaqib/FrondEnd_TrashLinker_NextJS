@@ -257,7 +257,7 @@ const EditProfileMap = ({ user }: { user: User }) => {
 
       <button
         onClick={handleSave}
-        className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md w-full"
+        className="mt-4 bg-green-600 text-white py-2 px-4 rounded-md w-full"
       >
         Simpan Perubahan
       </button>

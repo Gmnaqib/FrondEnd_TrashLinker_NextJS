@@ -20,7 +20,7 @@ const RecyclingComponent: React.FC = () => {
       {/* Gambar Samping */}
       <div className="flex space-x-4">
         {/* Gambar Sampah */}
-        <div className="w-28 h-28 border-2 border-blue-500 rounded-lg overflow-hidden">
+        <div className="w-28 h-28 border-2 border-green-500 rounded-lg overflow-hidden">
           <img
             src="img/img_rcycling1.png"
             alt="Trash Bin"

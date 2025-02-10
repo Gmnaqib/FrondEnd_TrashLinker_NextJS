@@ -1,11 +1,12 @@
 "use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import "@/styles/globals.css";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import CardContent from "@/components/Card/CardVolunteer";
 
 const VolunteerHome = () => {
@@ -40,7 +41,7 @@ const VolunteerHome = () => {
     title: string;
   }
 
-  // Menggunakan Union Type agar bisa menangani kedua jenis postingan
+  // Union Type untuk menangani kedua jenis postingan
   type PostinganItem = CommunityPostingan | UserPostingan;
 
   useEffect(() => {
@@ -48,7 +49,7 @@ const VolunteerHome = () => {
       const token = localStorage.getItem("token");
       const userData = localStorage.getItem("user");
       const user = userData ? JSON.parse(userData) : null;
-      const userRole = user?.role || "USER"; // Default ke "USER" jika tidak ada role
+      const userRole = user?.role || "USER";
 
       setRole(userRole);
 
@@ -75,8 +76,8 @@ const VolunteerHome = () => {
           if (!response.ok) throw new Error("Gagal memuat data");
 
           const data = await response.json();
-          setItemsPostingan(data.data || []);
-        } catch  {
+          setItemsPostingan(data.data);
+        } catch {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -113,7 +114,7 @@ const VolunteerHome = () => {
             : item
         )
       );
-    } catch  {
+    } catch {
       setError("Gagal melakukan check-in");
     }
   };
@@ -141,80 +142,10 @@ const VolunteerHome = () => {
           "postVolunteerId" in item ? item.postVolunteerId !== id : true
         )
       );
-    } catch  {
+    } catch {
       setError("Gagal membatalkan");
     }
   };
-
-  // const handleConvertToVolunteer = async (id: string, schedule: string) => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) return;
-
-  //     const response = await fetch(
-  //       `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           type: "Volunteer",
-  //           schedule: schedule, // Format: "YYYY-MM-DD HH:mm:ss"
-  //         }),
-  //       }
-  //     );
-
-  //     if (!response.ok) throw new Error("Gagal mengubah ke Volunteer");
-
-  //     // Perbarui state setelah berhasil
-  //     setItemsPostingan((prev) =>
-  //       prev.map((item) =>
-  //         "id" in item && item.id === id
-  //           ? { ...item, type: "Volunteer", schedule }
-  //           : item
-  //       )
-  //     );
-  //   } catch (err) {
-  //     setError("Gagal mengubah ke Volunteer");
-  //   }
-  // };
-
-  // const handleCancelVolunteer = async (id: string) => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) return;
-
-  //     const response = await fetch(
-  //       `http://178.128.221.26:3000/posts/${id}/addVolunteer`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           type: "Report",
-  //           schedule: null,
-  //         }),
-  //       }
-  //     );
-
-  //     if (!response.ok) throw new Error("Gagal membatalkan Volunteer");
-
-  //     // Perbarui state setelah berhasil
-  //     setItemsPostingan((prev) =>
-  //       prev.map((item) =>
-  //         "id" in item && item.id === id
-  //           ? { ...item, type: "Report", schedule: "" }
-  //           : item
-  //       )
-  //     );
-  //   } catch (err) {
-  //     setError("Gagal membatalkan Volunteer");
-  //   }
-  // };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -227,27 +158,32 @@ const VolunteerHome = () => {
             <h2 className="text-lg font-semibold mb-4">
               {role === "COMMUNITY" ? "Laporan Postingan" : "Daftar Volunteer"}
             </h2>
-
-            {itemsPostingan.map((item) => {
-              if ("postVolunteerId" in item) {
-                return (
-                  <div
-                    key={item.postVolunteerId}
-                    className="w-full max-w-[800px]"
-                  >
-                    <CardContent
-                      key={item.postVolunteerId}
-                      title={item.title}
-                      createdAt={new Date(item.updatedAt).toLocaleDateString()}
-                      onCheckinClick={() => handleCheckin(item.postVolunteerId)}
-                      onCancelClick={() => handleCancel(item.postVolunteerId)}
-                      isCheckedIn={item.checkin === 1}
-                    />
-                  </div>
-                );
-              }
-              return null;
-            })}
+            {itemsPostingan.map((item) => (
+              <div
+                key={"postVolunteerId" in item ? item.postVolunteerId : item.id}
+                className="w-full max-w-[800px]"
+              >
+                <CardContent
+                  title={item.title}
+                  createdAt={
+                    "updatedAt" in item
+                      ? new Date(item.updatedAt).toLocaleDateString()
+                      : new Date(item.createdAt).toLocaleDateString()
+                  }
+                  onCheckinClick={() =>
+                    handleCheckin(
+                      "postVolunteerId" in item ? Number(item.postVolunteerId) : Number(item.id)
+                    )
+                  }
+                  onCancelClick={() =>
+                    handleCancel(
+                      "postVolunteerId" in item ? Number(item.postVolunteerId) : Number(item.id)
+                    )
+                  }
+                  isCheckedIn={"checkin" in item && item.checkin === 1}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>

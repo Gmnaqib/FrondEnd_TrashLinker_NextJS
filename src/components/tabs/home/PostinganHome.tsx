@@ -10,6 +10,7 @@ const PostinganHome = () => {
   const [filtered, setFiltered] = useState(false);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
   const router = useRouter();
+  const [isJoining, setIsJoining] = useState(false);
   //const [role, setRole] = useState<string | null>(null);
 
   interface PostinganItem {
@@ -29,11 +30,6 @@ const PostinganHome = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
-      // const userData = localStorage.getItem("user");
-      // const user = userData ? JSON.parse(userData) : null;
-      // const userRole = user?.role || null;
-      
-      // setRole(userRole);
 
       if (!token) {
         router.push("/auth/signin");
@@ -75,6 +71,7 @@ const PostinganHome = () => {
     setFiltered(true);
   };
 
+  
   const handleVolunteerClick = async (postId: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -82,27 +79,28 @@ const PostinganHome = () => {
       return;
     }
 
+    setIsJoining(true); // Disable button & change text
+
     try {
-      const response = await fetch(
-        "http://178.128.221.26:3000/volunteer/join",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ postId }),
-        }
-      );
+      const response = await fetch("http://178.128.221.26:3000/volunteer/join", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId }),
+      });
 
       const data = await response.json();
       if (response.ok) {
         alert("Berhasil bergabung sebagai volunteer!");
       } else {
         alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
+        setIsJoining(false); // Jika gagal, tombol bisa diklik lagi
       }
-    } catch  {
+    } catch {
       alert("Terjadi kesalahan saat menghubungi server.");
+      setIsJoining(false); // Jika error, tombol bisa diklik lagi
     }
   };
 
@@ -132,7 +130,7 @@ const PostinganHome = () => {
             />
             <button
               onClick={handleFilter}
-              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
             >
               Filter
             </button>

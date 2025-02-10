@@ -155,7 +155,7 @@ const Signup = () => {
             placeholder="Username"
             value={data.username}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           />
           <input
             name="email"
@@ -163,13 +163,13 @@ const Signup = () => {
             placeholder="Email address"
             value={data.email}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           />
           <select
             name="role"
             value={data.role}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           >
             <option value="">Select Role</option>
             <option value="USER">Masyarakat</option>
@@ -181,7 +181,7 @@ const Signup = () => {
             placeholder="Password"
             value={data.password}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           />
           <label className="block text-gray-700 font-medium">
             Full Address
@@ -191,19 +191,19 @@ const Signup = () => {
             type="text"
             value={data.address}
             readOnly
-            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           />
           <div ref={mapContainerRef} className="h-64 w-full mt-2 rounded-lg" />
           <button
             type="submit"
-            className="w-full p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-3 text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
           >
             Sign Up
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
-          <Link href="/auth/signin" className="text-blue-600 hover:underline">
+          <Link href="/auth/signin" className="text-green-600 hover:underline">
             Sign In
           </Link>
         </p>
