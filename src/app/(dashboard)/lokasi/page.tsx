@@ -9,7 +9,7 @@ import '@/styles/globals.css';
 mapboxgl.accessToken = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g"; 
 
 export default function Home() {
-  const [map, setMap] = useState<mapboxgl.Map | null>(null);
+  //const [map, setMap] = useState<mapboxgl.Map | null>(null);
   interface DataItem {
     longitude: number;
     latitude: number;
@@ -20,9 +20,9 @@ export default function Home() {
   }
 
   const [data, setData] = useState<DataItem[]>([]);
-  const [lng, setLng] = useState(106.8456);
-  const [lat, setLat] = useState(-6.2088);
-  const [zoom, setZoom] = useState(12);
+  const [lng] = useState(106.8456);
+  const [lat] = useState(-6.2088);
+  const [zoom] = useState(12);
   const router = useRouter();
 
   useEffect(() => {
@@ -65,13 +65,12 @@ export default function Home() {
     );
 
     data.forEach((item) => {
-      const marker = new mapboxgl.Marker()
+      new mapboxgl.Marker()
         .setLngLat([item.longitude, item.latitude])
         .setPopup(
           new mapboxgl.Popup().setHTML(
             `<div style='font-family: sans-serif; padding: 10px;'>
               <h3 style='margin-bottom: 5px;'>${item.tpaName}</h3>
-              <img src='${item.image}' alt='${item.tpaName}' style='width: 100%; border-radius: 8px;'/>
               <p style='margin: 5px 0;'>${item.description}</p>
               <small>${item.tpaAddress}</small>
             </div>`
@@ -80,7 +79,7 @@ export default function Home() {
         .addTo(mapInstance);
     });
 
-    setMap(mapInstance);
+    //setMap(mapInstance);
 
     return () => mapInstance.remove();
   }, [data]);

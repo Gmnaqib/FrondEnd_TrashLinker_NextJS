@@ -1,7 +1,7 @@
 import React from "react";
 import { Calendar, Globe, Trash2, Users } from "lucide-react";
 
-type CardContent = {
+type CardProfileContent = {
   imageProfile: string;
   name: string;
   date: string;
@@ -16,7 +16,7 @@ type CardContent = {
   onVolunteerClick: () => void;
 };
 
-const CardContent: React.FC<CardContent> = ({
+const CardProfileContent: React.FC<CardProfileContent> = ({
   imageProfile,
   name,
   date,
@@ -90,7 +90,7 @@ const CardContent: React.FC<CardContent> = ({
       <p className="text-gray-500 text-sm mb-4">{description}</p>
 
       {/* Button */}
-      {type !== "report" && (
+      {type !== "Report" && (
         <button
           onClick={onVolunteerClick}
           className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 w-full text-center"
@@ -100,6 +100,6 @@ const CardContent: React.FC<CardContent> = ({
       )}
     </div>
   );
-};
+}; 
 
-export default CardContent;
+export default CardProfileContent;

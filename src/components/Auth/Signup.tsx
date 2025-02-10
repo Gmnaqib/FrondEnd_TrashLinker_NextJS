@@ -1,5 +1,4 @@
 "use client";
-
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
@@ -14,10 +13,6 @@ const MAPBOX_ACCESS_TOKEN =
   "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
 const Signup = () => {
-  const [map, setMap] = useState(null);
-  const [lng, setLng] = useState(106.8456);
-  const [lat, setLat] = useState(-6.2088);
-  const [zoom, setZoom] = useState(12);
   const [data, setData] = useState({
     email: "",
     username: "",
@@ -47,7 +42,6 @@ const Signup = () => {
       // Initialize the Geocoder and add it directly to the map
       const geocoder = new MapboxGeocoder({
         accessToken: MAPBOX_ACCESS_TOKEN,
-        mapboxgl: mapboxgl as any,
         placeholder: "Search for your address",
       });
       map.addControl(geocoder, "top-left"); // Adding geocoder to the map directly
@@ -119,7 +113,7 @@ const Signup = () => {
     }
   }, []);
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
     setData((prevData) => ({ ...prevData, [name]: value }));
   };

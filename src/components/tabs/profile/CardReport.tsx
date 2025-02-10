@@ -1,7 +1,7 @@
 import React from "react";
 import { Calendar, Globe, Trash2, Users } from "lucide-react";
 
-type CardContent = {
+type CardReport = {
   imageProfile: string;
   name: string;
   date: string;
@@ -16,7 +16,7 @@ type CardContent = {
   onVolunteerClick: () => void;
 };
 
-const CardContent: React.FC<CardContent> = ({
+const CardReport: React.FC<CardReport> = ({
   imageProfile,
   name,
   date,
@@ -57,7 +57,7 @@ const CardContent: React.FC<CardContent> = ({
           src={imageBefore}
           className="w-full h-auto rounded-lg mb-4"
           alt="Before Image"
-          onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+          //onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
         />
       ) : (
         <div className="flex justify-center items-center bg-gray-100 rounded-lg h-40 mb-4">
@@ -95,11 +95,11 @@ const CardContent: React.FC<CardContent> = ({
           onClick={onVolunteerClick}
           className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 w-full text-center"
         >
-          Volunteer
+          Report To Volunteer
         </button>
       )}
     </div>
   );
 };
 
-export default CardContent;
+export default CardReport;

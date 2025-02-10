@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -34,8 +34,21 @@ const Signin = () => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("/home");
-    } catch (err) {
+      
+      switch (user.role) {
+        case "COMMUNITY":
+          router.push("/home");
+          break;
+        case "USER":
+          router.push("/home");
+          break;
+        case "ADMIN":
+          router.push("/admin");
+          break;
+        default:
+          router.push("/auth/signin");
+      }
+    } catch {
       setError("Failed to login, please try again.");
     } finally {
       setLoading(false);
@@ -80,7 +93,7 @@ const Signin = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Dont have an account?{' '}
           <Link href="/auth/signup" className="text-primary hover:underline">
             Sign Up
           </Link>

@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CardContent from "@/components/Card/CardContent";
 import "@/styles/globals.css";
+import CardReport from "./CardReport";
 
-const Postingan = () => {
+const ReportProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number | "">("");
-  const [filtered, setFiltered] = useState(false);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
   const router = useRouter();
-  const [address, setAddress] = useState('');
 
   interface PostinganItem {
     id: string;
@@ -21,6 +18,7 @@ const Postingan = () => {
     image: string;
     type: string;
     userAddress: string;
+    fullAddress: string;
     tpaName: string;
     schedule: string;
     volunteerCount: number;
@@ -36,11 +34,7 @@ const Postingan = () => {
 
       const fetchPosts = async () => {
         try {
-          let url = "http://178.128.221.26:3000/posts";
-          if (filtered && radius !== "") {
-            url += `?radius=${radius}`;
-          }
-          const response = await fetch(url, {
+          const response = await fetch("http://178.128.221.26:3000/posts/report", {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -51,9 +45,8 @@ const Postingan = () => {
           const data = await response.json();
           if (data && data.data) {
             setItemsPostingan(data.data);
-        
           }
-        } catch (err) {
+        } catch  {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -61,13 +54,9 @@ const Postingan = () => {
       };
       fetchPosts();
     }
-  }, [filtered]);
+  }, []);
 
-  const handleFilter = () => {
-    setFiltered(true);
-  };
-
-  const handleVolunteerClick = async (postId: string) => {
+  const handleReportToVolunteerClick = async (postId: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Anda harus login untuk menjadi volunteer.");
@@ -75,13 +64,16 @@ const Postingan = () => {
     }
 
     try {
-      const response = await fetch("http://178.128.221.26:3000/volunteer/join", {
-        method: "POST",
+      const response = await fetch(`http://178.128.221.26:3000/posts/${postId}/addVolunteer`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ postId }),
+        body: JSON.stringify({
+          type: "Volunteer",
+          schedule: "2025-01-11 17:30:03.000",
+        }),
       });
 
       const data = await response.json();
@@ -90,7 +82,7 @@ const Postingan = () => {
       } else {
         alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
       }
-    } catch (error) {
+    } catch  {
       alert("Terjadi kesalahan saat menghubungi server.");
     }
   };
@@ -103,34 +95,12 @@ const Postingan = () => {
     return <div>Error: {error}</div>;
   }
 
-  // change lat lon convert to full address
-  
-
-
   return (
     <section className="overflow-hidden py-6">
       <div className="mx-auto max-w-3xl p-4">
-        <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center">
-          <h2 className="text-lg font-semibold mb-2">Filter Postingan</h2>
-          <div className="flex gap-2 items-center mb-4">
-            <input
-              type="number"
-              value={radius}
-              onChange={(e) => setRadius(e.target.value !== "" ? Number(e.target.value) : "")}
-              placeholder="Masukkan radius (km)"
-              className="border px-2 py-1 rounded w-50"
-            />
-            <button
-              onClick={handleFilter}
-              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-            >
-              Filter
-            </button>
-          </div>
-        </div>
         <div className="mt-6 flex flex-col items-center gap-4">
-          {itemsPostingan.map((item) => (
-            <CardContent
+            {itemsPostingan.map((item) => (
+            <CardReport
               key={item.id}
               imageProfile="img/profile.jpg"
               name={item.userName}
@@ -139,17 +109,17 @@ const Postingan = () => {
               description={item.description}
               imageBefore={`http://178.128.221.26:3000${item.image}`}
               type={item.type}
-              city={item.userAddress}
-              tpa={item.tpaName}
+              city={item.fullAddress}
+              tpa={item.tpaName || "Tidak Ada TPA"}
               dateVolunteer={new Date(item.schedule).toLocaleDateString()}
-              volunteer={item.volunteerCount}
-              onVolunteerClick={() => handleVolunteerClick(item.id)}
+              volunteer={item.volunteerCount ?? 0}
+              onVolunteerClick={() => handleReportToVolunteerClick(item.id)}
             />
-          ))}
+            ))}
         </div>
       </div>
     </section>
   );
 };
 
-export default Postingan;
+export default ReportProfile;
