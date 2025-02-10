@@ -6,10 +6,23 @@ import ExportButtons from "./ExportButton";
 
 export default function Dashboard() {
   const router = useRouter();
-  const [tpa, setTpa] = useState<{ id: number; tpa_name: string; tpa_location: string; tpa_description: string }[]>([]);
-  const [posts, setPosts] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
-  const [reports, setReports] = useState<{ id: number; title: string; description: string; fullAddress: string }[]>([]);
-  const [leaderboard, setLeaderboard] = useState<{ userId: number; username: string; totalActivities: number }[]>([]);
+  const [tpa, setTpa] = useState<
+    {
+      id: number;
+      tpa_name: string;
+      tpa_location: string;
+      tpa_description: string;
+    }[]
+  >([]);
+  const [posts, setPosts] = useState<
+    { id: number; title: string; description: string; fullAddress: string }[]
+  >([]);
+  const [reports, setReports] = useState<
+    { id: number; title: string; description: string; fullAddress: string }[]
+  >([]);
+  const [leaderboard, setLeaderboard] = useState<
+    { userId: number; username: string; totalActivities: number }[]
+  >([]);
   const [newTpa, setNewTpa] = useState({
     tpa_name: "",
     tpa_location: "",
@@ -19,18 +32,37 @@ export default function Dashboard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
+    const userRole: "USER" | "ADMIN" = user?.role || "USER";
+
+    if (userRole !== "ADMIN") {
+      router.push("/");
+    }
+  }, [router]);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const url = "http://178.128.221.26:3000";
 
     const fetchData = async () => {
       try {
-        const [postsRes, reportsRes, tpaRes, leaderboardRes] = await Promise.all([
-          fetch(`${url}/posts`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${url}/posts/report`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${url}/tpa`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${url}/volunteer/leaderboard`, { headers: { Authorization: `Bearer ${token}` } })
-        ]);
-        
+        const [postsRes, reportsRes, tpaRes, leaderboardRes] =
+          await Promise.all([
+            fetch(`${url}/posts`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${url}/posts/report`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${url}/tpa`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${url}/volunteer/leaderboard`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
         const postsData = await postsRes.json();
         const reportsData = await reportsRes.json();
         const tpaData = await tpaRes.json();
@@ -64,7 +96,6 @@ export default function Dashboard() {
     router.push("/auth/signin");
   };
 
-
   const handleTpaSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -86,7 +117,12 @@ export default function Dashboard() {
 
       const data = await res.json();
       setTpa([...tpa, data]);
-      setNewTpa({ tpa_name: "", tpa_location: "", tpa_image: "", tpa_description: "" });
+      setNewTpa({
+        tpa_name: "",
+        tpa_location: "",
+        tpa_image: "",
+        tpa_description: "",
+      });
       setSelectedFile(null);
     } catch (error) {
       console.error("Error adding TPA:", error);
@@ -101,65 +137,109 @@ export default function Dashboard() {
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Add TPA</h2>
           <form onSubmit={handleTpaSubmit} className="mb-4 space-y-4">
-            <input type="text" placeholder="TPA Name" value={newTpa.tpa_name} onChange={(e) => setNewTpa({ ...newTpa, tpa_name: e.target.value })} className="w-full p-2 border rounded" required />
-            <input type="text" placeholder="Location" value={newTpa.tpa_location} onChange={(e) => setNewTpa({ ...newTpa, tpa_location: e.target.value })} className="w-full p-2 border rounded" required />
-            <textarea placeholder="Description" value={newTpa.tpa_description} onChange={(e) => setNewTpa({ ...newTpa, tpa_description: e.target.value })} className="w-full p-2 border rounded" required />
-            <input type="file" onChange={handleFileChange} className="w-full p-2 border rounded" required />
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Add TPA</button>
+            <input
+              type="text"
+              placeholder="TPA Name"
+              value={newTpa.tpa_name}
+              onChange={(e) =>
+                setNewTpa({ ...newTpa, tpa_name: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Location"
+              value={newTpa.tpa_location}
+              onChange={(e) =>
+                setNewTpa({ ...newTpa, tpa_location: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+            <textarea
+              placeholder="Description"
+              value={newTpa.tpa_description}
+              onChange={(e) =>
+                setNewTpa({ ...newTpa, tpa_description: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded"
+            >
+              Add TPA
+            </button>
           </form>
         </div>
 
         {/* TPA List as Table */}
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">TPA List</h2>
-          <div className="overflow-auto max-h-96"> {/* Tambahkan scroll dengan batas tinggi */}
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-2">Name</th>
-                <th className="border p-2">Location</th>
-                <th className="border p-2">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tpa.map((item) => (
-                <tr key={item.id} className="border">
-                  <td className="border p-2">{item.tpa_name}</td>
-                  <td className="border p-2">{item.tpa_location}</td>
-                  <td className="border p-2">{item.tpa_description}</td>
+          <div className="overflow-auto max-h-96">
+            {" "}
+            {/* Tambahkan scroll dengan batas tinggi */}
+            <table className="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border p-2">Name</th>
+                  <th className="border p-2">Location</th>
+                  <th className="border p-2">Description</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {tpa.map((item) => (
+                  <tr key={item.id} className="border">
+                    <td className="border p-2">{item.tpa_name}</td>
+                    <td className="border p-2">{item.tpa_location}</td>
+                    <td className="border p-2">{item.tpa_description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
         {/* Postingan List as Table */}
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Postingan List</h2>
-          <div className="overflow-auto max-h-96"> {/* Tambahkan scroll dengan batas tinggi */}
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-2">Title</th>
-                <th className="border p-2">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {posts.map((post) => (
-                <tr key={post.id} className="border">
-                  <td className="border p-2">{post.title}</td>
-                  <td className="border p-2">{post.description}</td>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Postingan List
+          </h2>
+          <div className="overflow-auto max-h-96">
+            {" "}
+            {/* Tambahkan scroll dengan batas tinggi */}
+            <table className="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border p-2">Title</th>
+                  <th className="border p-2">Description</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {posts.map((post) => (
+                  <tr key={post.id} className="border">
+                    <td className="border p-2">{post.title}</td>
+                    <td className="border p-2">{post.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-         {/* Postingan List as Table */}
-         <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Reports List</h2>
+        {/* Postingan List as Table */}
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Reports List
+          </h2>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-200">
@@ -180,7 +260,9 @@ export default function Dashboard() {
 
         {/* Leaderboard List as Table */}
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Leaderboard List</h2>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Leaderboard List
+          </h2>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-200">
@@ -199,10 +281,20 @@ export default function Dashboard() {
           </table>
         </div>
 
-        <ExportButtons tpa={tpa} posts={posts} reports={reports} leaderboard={leaderboard} />
+        <ExportButtons
+          tpa={tpa}
+          posts={posts}
+          reports={reports}
+          leaderboard={leaderboard}
+        />
 
         {/* Logout Button */}
-        <button onClick={handleLogout} className="mt-4 w-full bg-red-500 text-white p-3 rounded-lg">Logout</button>
+        <button
+          onClick={handleLogout}
+          className="mt-4 w-full bg-red-500 text-white p-3 rounded-lg"
+        >
+          Logout
+        </button>
       </div>
     </section>
   );
