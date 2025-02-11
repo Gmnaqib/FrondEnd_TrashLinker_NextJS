@@ -61,13 +61,13 @@ export default function About() {
           />
           <CardFeature
             icon="icon_recycle.svg"
-            fitur="Manajemen Pengepul Sampah"
+            fitur="Mengajak Bersosialisasi Sampah"
             description="Fitur untuk terhubung dengan pengepul atau bank sampah lokal."
           />
           <CardFeature
             icon="icon_location.svg"
-            fitur="Lokasi TPA"
-            description="Menampilkan posisi sampah dan TPA/TPS terdekat."
+            fitur="Lokasi Volunter"
+            description="Menampilkan posisi volunteer terdekat."
           />
         </div>
 

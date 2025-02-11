@@ -22,6 +22,7 @@ const PostinganHome = () => {
     image: string;
     type: string;
     userAddress: string;
+    fullAddress: string;
     tpaName: string;
     schedule: string;
     volunteerCount: number;
@@ -173,9 +174,8 @@ const PostinganHome = () => {
               description={item.description}
               imageBefore={`${apiUrl}${item.image}`}
               type={item.type}
-              city={item.userAddress}
+              city={item.fullAddress}
               tpa={item.tpaName}
-              //isJoined={Number(joinedPosts) == (Number(item.id))}
               isJoined={joinedPosts.includes(Number(item.id))}
               dateVolunteer={new Date(item.schedule).toLocaleDateString()}
               volunteer={item.volunteerCount}

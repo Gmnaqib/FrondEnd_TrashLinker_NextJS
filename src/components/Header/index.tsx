@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
 import menuData from "./menuData";
 
 const Header = () => {
@@ -12,6 +11,7 @@ const Header = () => {
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const pathUrl = usePathname();
 
   // Sticky menu
@@ -28,7 +28,12 @@ const Header = () => {
 
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
-  });
+    
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
+    const userRole = user?.role || "USER";
+    setUserRole(userRole);
+  }, []);
 
   return (
     <header
@@ -57,7 +62,7 @@ const Header = () => {
             />
           </Link>
 
-          {/* <!-- Hamburger Toggle BTN --> */}
+          {/* Hamburger Toggle BTN */}
           <button
             aria-label="hamburger Toggler"
             className="block xl:hidden"
@@ -81,24 +86,11 @@ const Header = () => {
                   }`}
                 ></span>
               </span>
-              <span className="du-block absolute right-0 h-full w-full rotate-45">
-                <span
-                  className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white ${
-                    !navigationOpen ? "!h-0 delay-[0]" : "h-full"
-                  }`}
-                ></span>
-                <span
-                  className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
-                    !navigationOpen ? "!h-0 delay-200" : "h-0.5"
-                  }`}
-                ></span>
-              </span>
             </span>
           </button>
-          {/* <!-- Hamburger Toggle BTN --> */}
         </div>
 
-        {/* Nav Menu Start   */}
+        {/* Nav Menu Start */}
         <div
           className={`invisible h-0 w-full items-center justify-between xl:visible xl:flex xl:h-auto xl:w-full ${
             navigationOpen &&
@@ -107,50 +99,41 @@ const Header = () => {
         >
           <nav>
             <ul className="flex flex-col gap-5 xl:flex-row xl:items-center xl:gap-10">
-              {menuData.map((menuItem, key) => (
-                <li key={key} className={menuItem.submenu && "group relative"}>
-                  {menuItem.submenu ? (
-                    <>
-                      <button
-                        onClick={() => setDropdownToggler(!dropdownToggler)}
-                        className="flex cursor-pointer items-center justify-between gap-3 hover:text-green-600"
+              {userRole !== "ADMIN" &&
+                menuData.map((menuItem, key) => (
+                  <li key={key} className={menuItem.submenu && "group relative"}>
+                    {menuItem.submenu ? (
+                      <>
+                        <button
+                          onClick={() => setDropdownToggler(!dropdownToggler)}
+                          className="flex cursor-pointer items-center justify-between gap-3 hover:text-green-600"
+                        >
+                          {menuItem.title}
+                        </button>
+                        <ul
+                          className={`dropdown ${dropdownToggler ? "flex" : ""}`}
+                        >
+                          {menuItem.submenu.map((item, key) => (
+                            <li key={key} className="text-meta">
+                              <Link href={item.path || "#"}>{item.title}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <Link
+                        href={`${menuItem.path}`}
+                        className={
+                          pathUrl === menuItem.path
+                            ? "text-meta hover:text-meta"
+                            : "hover:text-meta"
+                        }
                       >
                         {menuItem.title}
-                        <span>
-                          <svg
-                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-green-600"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                          >
-                            <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-                          </svg>
-                        </span>
-                      </button>
-
-                      <ul
-                        className={`dropdown ${dropdownToggler ? "flex" : ""}`}
-                      >
-                        {menuItem.submenu.map((item, key) => (
-                          <li key={key} className="text-meta">
-                            <Link href={item.path || "#"}>{item.title}</Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <Link
-                      href={`${menuItem.path}`}
-                      className={
-                        pathUrl === menuItem.path
-                          ? "text-meta hover:text-meta"
-                          : "hover:text-meta"
-                      }
-                    >
-                      {menuItem.title}
-                    </Link>
-                  )}
-                </li>
-              ))}
+                      </Link>
+                    )}
+                  </li>
+                ))}
             </ul>
           </nav>
 
@@ -175,7 +158,5 @@ const Header = () => {
     </header>
   );
 };
-
-// w-full delay-300
 
 export default Header;
