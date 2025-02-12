@@ -7,6 +7,7 @@ const VolunteerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
+  const [name, setName] = useState("Name");
   const router = useRouter();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,6 +33,13 @@ const VolunteerProfile = () => {
         router.push("/auth/signin");
         return;
       }
+
+      const user = localStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        setName(userData.name);
+      }
+
 
       const fetchPosts = async () => {
         try {
@@ -85,6 +93,7 @@ const VolunteerProfile = () => {
     }
   };
 
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -101,7 +110,7 @@ const VolunteerProfile = () => {
             <CardProfileContent
               key={item.id}
               imageProfile="img/profile.jpg"
-              name={item.userName}
+              name={name}
               date={new Date(item.createdAt).toLocaleString()}
               title={item.title}
               description={item.description}
@@ -109,7 +118,7 @@ const VolunteerProfile = () => {
               type={item.type}
               city={item.fullAddress}
               tpa={item.tpaName || "Tidak Ada TPA"}
-              dateVolunteer={new Date(item.schedule).toLocaleDateString()}
+              dateVolunteer={new Date(item.createdAt).toLocaleDateString()}
               volunteer={item.volunteerCount ?? 0}
               onVolunteerClick={() => handleVolunteerClick(item.id)}
             />
