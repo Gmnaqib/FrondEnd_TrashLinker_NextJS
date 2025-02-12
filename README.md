@@ -6,7 +6,7 @@ To get started with the project, follow these steps:
 
 Choose one of the following commands to start the server:
 
-###Add file .env
+### Add file .env
 NEXT_PUBLIC_API_URL=https://{Url}
 
 ### Using npm:
