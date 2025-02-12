@@ -9,4 +9,7 @@ Choose one of the following commands to start the server:
 ### Using npm:
 
 ```bash
+npm install
+
+```bash
 npm run dev
