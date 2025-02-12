@@ -11,5 +11,4 @@ Choose one of the following commands to start the server:
 ```bash
 npm install
 
-```bash
 npm run dev
