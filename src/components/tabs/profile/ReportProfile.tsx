@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "@/styles/globals.css";
 import CardReport from "./CardReport";
+import axios from "axios";
 
 const ReportProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -35,19 +36,17 @@ const ReportProfile = () => {
 
       const fetchPosts = async () => {
         try {
-          const response = await fetch(`${apiUrl}/posts/report`, {
-            method: "GET",
+          const response = await axios.get(`${apiUrl}/posts/report`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           });
 
-          const data = await response.json();
-          if (data && data.data) {
-            setItemsPostingan(data.data);
+          if (response.data?.data) {
+            setItemsPostingan(response.data.data);
           }
-        } catch  {
+        } catch (error) {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -65,26 +64,27 @@ const ReportProfile = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/posts/${postId}/addVolunteer`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axios.patch(
+        `${apiUrl}/posts/${postId}/addVolunteer`,
+        {
           type: "Volunteer",
           schedule: "2025-01-11 17:30:03.000",
-        }),
-      });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const data = await response.json();
-      if (response.ok) {
-        alert("Berhasil bergabung sebagai volunteer!");
-      } else {
-        alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
-      }
-    } catch  {
-      alert("Terjadi kesalahan saat menghubungi server.");
+      alert("Berhasil Status Report Menjadi Volunteer!");
+    } catch (error: any) {
+      alert(
+        `Gagal bergabung: ${
+          error.response?.data?.message || "Terjadi kesalahan"
+        }`
+      );
     }
   };
 
@@ -100,7 +100,7 @@ const ReportProfile = () => {
     <section className="overflow-hidden py-6">
       <div className="mx-auto max-w-3xl p-4">
         <div className="mt-6 flex flex-col items-center gap-4">
-            {itemsPostingan.map((item) => (
+          {itemsPostingan.map((item) => (
             <CardReport
               key={item.id}
               imageProfile="img/profile.jpg"
@@ -116,7 +116,7 @@ const ReportProfile = () => {
               volunteer={item.volunteerCount ?? 0}
               onVolunteerClick={() => handleReportToVolunteerClick(item.id)}
             />
-            ))}
+          ))}
         </div>
       </div>
     </section>

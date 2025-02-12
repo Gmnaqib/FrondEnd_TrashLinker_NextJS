@@ -8,6 +8,7 @@ import "swiper/css/scrollbar";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import CardContent from "@/components/Card/CardVolunteer";
+import axios from "axios";
 
 const VolunteerHome = () => {
   const [loading, setLoading] = useState(true);
@@ -65,19 +66,15 @@ const VolunteerHome = () => {
               ? `${apiUrl}/posts/report`
               : `${apiUrl}/volunteer/me`;
 
-          const response = await fetch(url, {
-            method: "GET",
+          const response = await axios.get(url, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           });
 
-          if (!response.ok) throw new Error("Gagal memuat data");
-
-          const data = await response.json();
-          setItemsPostingan(data.data);
-        } catch {
+          setItemsPostingan(response.data.data);
+        } catch (error) {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -93,22 +90,19 @@ const VolunteerHome = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await fetch(
+      const response = await axios.patch(
         `${apiUrl}/volunteer/${id}`,
+        { checkin: 1 },
         {
-          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ checkin: 1 }),
         }
       );
 
       console.log("Response status:", response.status);
-      console.log("Response body:", await response.text());
-
-      if (!response.ok) throw new Error("Gagal melakukan check-in");
+      console.log("Response body:", response.data);
 
       setItemsPostingan((prev) =>
         prev.map((item) =>
@@ -117,7 +111,7 @@ const VolunteerHome = () => {
             : item
         )
       );
-    } catch {
+    } catch (error) {
       setError("Gagal melakukan check-in");
     }
   };
@@ -127,25 +121,19 @@ const VolunteerHome = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await fetch(
-        `${apiUrl}/volunteer/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Gagal membatalkan");
+      await axios.delete(`${apiUrl}/volunteer/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       setItemsPostingan((prev) =>
         prev.filter((item) =>
           "postVolunteerId" in item ? item.postVolunteerId !== id : true
         )
       );
-    } catch {
+    } catch (error) {
       setError("Gagal membatalkan");
     }
   };
