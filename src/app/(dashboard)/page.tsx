@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import 'leaflet/dist/leaflet.css';
 import '@/styles/globals.css';
 import About from "./about/page";
 

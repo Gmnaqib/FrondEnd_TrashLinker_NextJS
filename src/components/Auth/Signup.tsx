@@ -26,8 +26,10 @@ const Signup = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
+
   const router = useRouter();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
       mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -44,8 +46,8 @@ const Signup = () => {
         accessToken: MAPBOX_ACCESS_TOKEN,
         placeholder: "Search for your address",
       });
+      
       map.addControl(geocoder, "top-left"); // Adding geocoder to the map directly
-
       map.addControl(new mapboxgl.NavigationControl());
       map.addControl(
         new mapboxgl.GeolocateControl({
@@ -54,7 +56,6 @@ const Signup = () => {
         })
       );
   
-
       geocoder.on("result", (e) => {
         // When a result is selected from the geocoder
         const { place_name, geometry } = e.result;
@@ -81,7 +82,6 @@ const Signup = () => {
 
       map.on("click", (e) => {
         const { lng, lat } = e.lngLat;
-
         // Use reverse geocoding to fetch the address based on coordinates
         axios
           .get(
@@ -121,16 +121,12 @@ const Signup = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `${apiUrl}/user/register`,
-        data
-      );
-      console.log("Response:", response.data);
-
+      const response = await axios.post(`${apiUrl}/user/register`,data);
       const { token, ...user } = response.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+
       router.push("/auth/signin");
     } catch (error) {
       console.error("Error:", error);

@@ -9,7 +9,6 @@ import '@/styles/globals.css';
 mapboxgl.accessToken = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g"; 
 
 export default function Home() {
-  //const [map, setMap] = useState<mapboxgl.Map | null>(null);
   interface DataItem {
     longitude: number;
     latitude: number;

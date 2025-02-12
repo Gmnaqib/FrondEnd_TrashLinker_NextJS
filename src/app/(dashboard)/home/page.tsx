@@ -18,6 +18,7 @@ export default function Page() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const router = useRouter();
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Page() {
       .get(`${apiUrl}/volunteer/leaderboard`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => setLeaders(response.data.data || [])) // Access response.data.data
+      .then((response) => setLeaders(response.data.data || []))
       .catch((error) =>
         console.error("Error fetching leaderboard data:", error)
       );

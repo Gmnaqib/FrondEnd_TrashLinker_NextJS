@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CardContent from "@/components/Card/CardContent";
 import "@/styles/globals.css";
+import axios from "axios";
 
 const PostinganHome = () => {
   const [loading, setLoading] = useState(true);
@@ -45,19 +46,17 @@ const PostinganHome = () => {
             url += `?radius=${radius}`;
           }
 
-          const response = await fetch(url, {
-            method: "GET",
+          const response = await axios.get(url, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           });
 
-          const data = await response.json();
-          if (data?.data) {
-            setItemsPostingan(data.data);
+          if (response.data?.data) {
+            setItemsPostingan(response.data.data);
           }
-        } catch {
+        } catch (error) {
           setError("Gagal memuat data");
         } finally {
           setLoading(false);
@@ -74,23 +73,23 @@ const PostinganHome = () => {
 
     const fetchJoinedPosts = async () => {
       try {
-        const response = await fetch(`${apiUrl}/volunteer/me`, {
-          method: "GET",
+        const response = await axios.get(`${apiUrl}/volunteer/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
-  
-        const data = await response.json();
-        if (response.ok && data?.data) {
-          setJoinedPosts(data.data.map((volunteer: any) => volunteer.postId));
+
+        if (response.status === 200 && response.data?.data) {
+          setJoinedPosts(
+            response.data.data.map((volunteer: any) => volunteer.postId)
+          );
         }
-      } catch {
-        console.error("Gagal memuat data volunteer");
+      } catch (error) {
+        console.error("Gagal memuat data volunteer:", error);
       }
     };
-  
+
     fetchJoinedPosts();
   }, []);
 
@@ -106,23 +105,26 @@ const PostinganHome = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/volunteer/join`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ postId }),
-      });
+      const response = await axios.post(
+        `${apiUrl}/volunteer/join`,
+        { postId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const data = await response.json();
-      if (response.ok) {
+      if (response.status === 200) {
         alert("Berhasil bergabung sebagai volunteer!");
         setJoinedPosts((prev) => [...prev, Number(postId)]);
       } else {
-        alert(`Gagal bergabung: ${data.message || "Terjadi kesalahan"}`);
+        alert(
+          `Gagal bergabung: ${response.data.message || "Terjadi kesalahan"}`
+        );
       }
-    } catch {
+    } catch (error) {
       alert("Terjadi kesalahan saat menghubungi server.");
     }
   };
@@ -159,29 +161,30 @@ const PostinganHome = () => {
           </div>
         </div>
         <div className="mt-6 flex flex-col items-center gap-4">
-          {itemsPostingan.map((item) => (
-            
-
-            console.log("Post ID:", item.id, "Joined Posts:", joinedPosts),
-            console.log("isJoined:", Number(joinedPosts) == (Number(item.id))),
-
-            <CardContent
-              key={item.id}
-              imageProfile="img/profile.jpg"
-              name={item.userName}
-              date={new Date(item.createdAt).toLocaleString()}
-              title={item.title}
-              description={item.description}
-              imageBefore={`${apiUrl}${item.image}`}
-              type={item.type}
-              city={item.fullAddress}
-              tpa={item.tpaName}
-              isJoined={joinedPosts.includes(Number(item.id))}
-              dateVolunteer={new Date(item.schedule).toLocaleDateString()}
-              volunteer={item.volunteerCount}
-              onVolunteerClick={() => handleVolunteerClick(item.id)}
-            />
-          ))}
+          {itemsPostingan.map(
+            (item) => (
+              console.log("Post ID:", item.id, "Joined Posts:", joinedPosts),
+              console.log("isJoined:", Number(joinedPosts) == Number(item.id)),
+              (
+                <CardContent
+                  key={item.id}
+                  imageProfile="img/profile.jpg"
+                  name={item.userName}
+                  date={new Date(item.createdAt).toLocaleString()}
+                  title={item.title}
+                  description={item.description}
+                  imageBefore={`${apiUrl}${item.image}`}
+                  type={item.type}
+                  city={item.fullAddress}
+                  tpa={item.tpaName}
+                  isJoined={joinedPosts.includes(Number(item.id))}
+                  dateVolunteer={new Date(item.schedule).toLocaleDateString()}
+                  volunteer={item.volunteerCount}
+                  onVolunteerClick={() => handleVolunteerClick(item.id)}
+                />
+              )
+            )
+          )}
         </div>
       </div>
     </section>
