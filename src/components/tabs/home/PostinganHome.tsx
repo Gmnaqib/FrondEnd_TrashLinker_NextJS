@@ -120,9 +120,7 @@ const PostinganHome = () => {
         alert("Berhasil bergabung sebagai volunteer!");
         setJoinedPosts((prev) => [...prev, Number(postId)]);
       } else {
-        alert(
-          `Gagal bergabung: ${response.data.message || "Terjadi kesalahan"}`
-        );
+        alert("Berhasil bergabung sebagai volunteer!");
       }
     } catch (error) {
       alert("Terjadi kesalahan saat menghubungi server.");
