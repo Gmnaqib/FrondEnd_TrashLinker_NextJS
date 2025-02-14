@@ -8,6 +8,8 @@ const ReportProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [itemsPostingan, setItemsPostingan] = useState<PostinganItem[]>([]);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [schedule, setSchedule] = useState("");
   const router = useRouter();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -56,7 +58,21 @@ const ReportProfile = () => {
     }
   }, []);
 
-  const handleReportToVolunteerClick = async (postId: string) => {
+  const handleOpenModal = (postId: string) => {
+    setSelectedPostId(postId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedPostId(null);
+    setSchedule("");
+  };
+
+  const handleSubmitSchedule = async () => {
+    if (!selectedPostId || !schedule) {
+      alert("Harap pilih tanggal terlebih dahulu.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Anda harus login untuk menjadi volunteer.");
@@ -64,11 +80,11 @@ const ReportProfile = () => {
     }
 
     try {
-      const response = await axios.patch(
-        `${apiUrl}/posts/${postId}/addVolunteer`,
+      await axios.patch(
+        `${apiUrl}/posts/${selectedPostId}/addVolunteer`,
         {
           type: "Volunteer",
-          schedule: "2025-01-11 17:30:03.000",
+          schedule,
         },
         {
           headers: {
@@ -77,14 +93,10 @@ const ReportProfile = () => {
           },
         }
       );
-
       alert("Berhasil Status Report Menjadi Volunteer!");
+      handleCloseModal();
     } catch (error: any) {
-      alert(
-        `Gagal bergabung: ${
-          error.response?.data?.message || "Terjadi kesalahan"
-        }`
-      );
+      alert(`Gagal bergabung: ${error.response?.data?.message || "Terjadi kesalahan"}`);
     }
   };
 
@@ -114,11 +126,28 @@ const ReportProfile = () => {
               tpa={item.tpaName || "Tidak Ada TPA"}
               dateVolunteer={new Date(item.schedule).toLocaleDateString()}
               volunteer={item.volunteerCount ?? 0}
-              onVolunteerClick={() => handleReportToVolunteerClick(item.id)}
+              onVolunteerClick={() => handleOpenModal(item.id)}
             />
           ))}
         </div>
       </div>
+      {selectedPostId && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold">Pilih Tanggal</h2>
+            <input
+              type="date"
+              value={schedule}
+              onChange={(e) => setSchedule(e.target.value)}
+              className="mt-2 p-2 border rounded w-full"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={handleCloseModal} className="px-4 py-2 bg-gray-500 text-white rounded">Batal</button>
+              <button onClick={handleSubmitSchedule} className="px-4 py-2 bg-blue-500 text-white rounded">Kirim</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

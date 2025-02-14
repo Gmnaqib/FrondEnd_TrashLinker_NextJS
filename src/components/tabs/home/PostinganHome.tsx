@@ -176,7 +176,7 @@ const PostinganHome = () => {
                   city={item.fullAddress}
                   tpa={item.tpaName}
                   isJoined={joinedPosts.includes(Number(item.id))}
-                  dateVolunteer={new Date(item.schedule).toLocaleDateString()}
+                  dateVolunteer={item.schedule}
                   volunteer={item.volunteerCount}
                   onVolunteerClick={() => handleVolunteerClick(item.id)}
                 />

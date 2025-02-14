@@ -8,7 +8,8 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import axios from "axios";
 import "@/styles/globals.css";
 
-mapboxgl.accessToken = "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZGV3YXRyaSIsImEiOiJjbHR2Y2VndTgwaHZuMmtwOG0xcWk0eTlwIn0.tp1jXAL6FLd7DKwgOW--7g";
 
 const AddPostinganForm = () => {
   const [formData, setFormData] = useState<{
@@ -18,7 +19,7 @@ const AddPostinganForm = () => {
     longitude: number;
     latitude: number;
     type: "Report" | "Volunteer";
-    schedule: string;
+    schedule: Date;
     tpaId: string;
     fullAddress: string;
   }>({
@@ -28,12 +29,14 @@ const AddPostinganForm = () => {
     longitude: 0,
     latitude: 0,
     type: "Report",
-    schedule: "",
+    schedule: new Date(),
     tpaId: "",
     fullAddress: "",
   });
 
-  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>([]);
+  const [tpaList, setTpaList] = useState<{ id: string; tpa_name: string }[]>(
+    []
+  );
   const [role, setRole] = useState<"USER" | "COMMUNITY">("USER");
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -69,11 +72,10 @@ const AddPostinganForm = () => {
 
     const geocoder = new Geocoder({
       accessToken: mapboxgl.accessToken as string,
-     
+
       marker: false,
       placeholder: "Search for location",
     });
-    
 
     map.addControl(geocoder);
     map.addControl(new mapboxgl.NavigationControl());
@@ -130,11 +132,16 @@ const AddPostinganForm = () => {
 
   if (!isAuthenticated) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      //[name]: value,
+      [name]: name === "schedule" ? new Date(value) : value,
     }));
   };
 
@@ -151,7 +158,14 @@ const AddPostinganForm = () => {
     e.preventDefault();
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, value as Blob | string);
+      if (key === "schedule") {
+        // Pastikan schedule dikirim sebagai string yang bisa dipahami backend
+        formDataToSend.append(key, (value as Date).toISOString());
+      } else if (key === "image" && value instanceof File) {
+        formDataToSend.append(key, value);
+      } else {
+        formDataToSend.append(key, value as string);
+      }
     });
 
     const token = localStorage.getItem("token");
@@ -177,39 +191,64 @@ const AddPostinganForm = () => {
 
   return (
     <section className="overflow-hidden pb-20 pt-35 md:pt-40 xl:pb-25 xl:pt-46">
-      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6" encType="multipart/form-data">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6"
+        encType="multipart/form-data"
+      >
         <h2 className="text-2xl font-bold mb-4">Add New Postingan</h2>
         <div className="space-y-4">
           <label className="block text-gray-700 font-medium">Title</label>
-          <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1" required />
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
           <label className="block text-gray-700 font-medium">Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1" rows={4} required />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            rows={4}
+            required
+          />
 
           <label className="block text-gray-700 font-medium">Image</label>
-          <input type="file" name="image" onChange={handleImageChange} className="w-full border rounded-lg p-2 mt-1" required />
+          <input
+            type="file"
+            name="image"
+            onChange={handleImageChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
           <label className="block text-gray-700 font-medium">Type</label>
-          <select name="type" value={formData.type} onChange={handleChange} className="w-full border rounded-lg p-2 mt-1">
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+          >
             <option value="Report">Report</option>
-            {role === "COMMUNITY" && <option value="Volunteer">Volunteer</option>}
+            {role === "COMMUNITY" && (
+              <option value="Volunteer">Volunteer</option>
+            )}
           </select>
 
-          {role === "COMMUNITY" && (
-            <>
-              <label className="block text-gray-700 font-medium">
-                Schedule
-              </label>
-              <input
-                type="date"
-                name="schedule"
-                value={formData.schedule}
-                onChange={handleChange}
-                className="w-full border rounded-lg p-2 mt-1"
-                required
-              />
-            </>
-          )}
+          <label className="block text-gray-700 font-medium">Tanggal</label>
+          <input
+            type="date"
+            name="schedule"
+            value={formData.schedule instanceof Date ? formData.schedule.toISOString().split("T")[0] : ""}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mt-1"
+            required
+          />
 
           <label className="block text-gray-700 font-medium">TPA</label>
           <select
@@ -227,12 +266,25 @@ const AddPostinganForm = () => {
             ))}
           </select>
 
-          <label className="block text-gray-700 font-medium">Full Address</label>
-          <input type="text" name="fullAddress" value={formData.fullAddress} className="w-full border rounded-lg p-2 mt-1" readOnly />
+          <label className="block text-gray-700 font-medium">
+            Full Address
+          </label>
+          <input
+            type="text"
+            name="fullAddress"
+            value={formData.fullAddress}
+            className="w-full border rounded-lg p-2 mt-1"
+            readOnly
+          />
 
           <div ref={mapContainerRef} className="h-64 w-full mt-2 rounded-lg" />
         </div>
-        <button type="submit" className="w-full bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600">Add Postingan</button>
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600"
+        >
+          Add Postingan
+        </button>
       </form>
     </section>
   );
