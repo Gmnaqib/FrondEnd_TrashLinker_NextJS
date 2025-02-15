@@ -11,7 +11,7 @@ type CardReport = {
   city: string;
   tpa: string;
   type: string;
-  dateVolunteer: string;
+  schedule: string;
   volunteer: number;
   onVolunteerClick: () => void;
 };
@@ -26,7 +26,7 @@ const CardReport: React.FC<CardReport> = ({
   city,
   tpa,
   type,
-  dateVolunteer,
+  schedule,
   volunteer,
   onVolunteerClick
 }) => {
@@ -77,7 +77,7 @@ const CardReport: React.FC<CardReport> = ({
         </div>
         <div className="flex items-center space-x-1">
           <Calendar size={20} strokeWidth={1.5} />
-          <span>{formatDate(dateVolunteer)}</span>
+          <span>{schedule}</span>
         </div>
         <div className="flex items-center space-x-1">
           <Users size={20} strokeWidth={1.5} />

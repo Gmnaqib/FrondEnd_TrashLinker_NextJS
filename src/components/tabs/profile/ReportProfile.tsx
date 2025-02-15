@@ -124,7 +124,7 @@ const ReportProfile = () => {
               type={item.type}
               city={item.fullAddress}
               tpa={item.tpaName || "Tidak Ada TPA"}
-              dateVolunteer={new Date(item.schedule).toLocaleDateString()}
+              schedule={item.schedule || "Belum ada jadwal"}
               volunteer={item.volunteerCount ?? 0}
               onVolunteerClick={() => handleOpenModal(item.id)}
             />
