@@ -118,7 +118,7 @@ const VolunteerProfile = () => {
               type={item.type}
               city={item.fullAddress}
               tpa={item.tpaName || "Tidak Ada TPA"}
-              dateVolunteer={new Date(item.createdAt).toLocaleDateString()}
+              dateVolunteer={item.createdAt}
               volunteer={item.volunteerCount ?? 0}
               onVolunteerClick={() => handleVolunteerClick(item.id)}
             />
